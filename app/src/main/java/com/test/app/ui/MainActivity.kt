@@ -1,17 +1,15 @@
 package com.test.app.ui
 
 import android.os.Bundle
-import android.util.Log
 import com.test.app.R
-import com.test.app.service.CurrencyRateService
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
-import io.reactivex.internal.functions.Functions
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
+import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -28,19 +26,16 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         disposable = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation())
-            .map { it.toString() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer { title = it }, Functions.emptyConsumer())
-
-//        disposable = viewModel.getCurrencyRates("EUR")
-//            .map { it.rates }
-//            .subscribe({ Log.v("Test", it.toString()) }, { Log.v("Test", it.message!!) })
-        val service = retrofit.create(CurrencyRateService::class.java)
-        service.getCurrencyRates("EUR")
-            .doOnSuccess { Log.v("Test", it.toString()) }
-            .doOnError(Consumer { Log.v("Test", it.message) })
-            .subscribe()
-
+                .switchMapSingle {
+                    viewModel.getCurrencyRates("EUR")
+                            .map { it.rates }
+                            .onErrorReturnItem(Collections.emptyMap())
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Timber.d("Test ${it.size}")
+                    title = it.size.toString()
+                }, { Timber.e(it) })
     }
 
     override fun onDestroy() {

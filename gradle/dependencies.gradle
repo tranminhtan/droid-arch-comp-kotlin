@@ -58,4 +58,9 @@ ext {
             stdlib : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
             reflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
     ]
+
+    timberVersion = '4.7.1'
+    info = [
+            timber: "com.jakewharton.timber:timber:$timberVersion"
+    ]
 }
