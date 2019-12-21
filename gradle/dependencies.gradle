@@ -1,0 +1,61 @@
+ext {
+    gradlePluginVersion = '3.5.3'
+    androidXVersion = '1.1.0'
+    androidXConstraintLayoutVersion = '1.1.3'
+    droid = [
+            coreKtx         : "androidx.core:core-ktx:$androidXVersion",
+            appcompat       : "androidx.appcompat:appcompat:$androidXVersion",
+            constraintLayout: "androidx.constraintlayout:constraintlayout:$androidXConstraintLayoutVersion",
+    ]
+
+    rxJavaVersion = '2.2.13'
+    rxAndroidVersion = '2.1.1'
+    rx = [
+            java   : "io.reactivex.rxjava2:rxjava:$rxJavaVersion",
+            android: "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    ]
+
+    okHttpVersion = '3.12.1'
+    retrofitVersion = '2.6.3'
+    network = [
+            retrofit               : "com.squareup.retrofit2:retrofit:$retrofitVersion",
+            retrofitRxJava2Adapter : "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion",
+            retrofitMoshiConverter : "com.squareup.retrofit2:converter-moshi:$retrofitVersion",
+            okHttp                 : "com.squareup.okhttp3:okhttp:$okHttpVersion",
+            okHttpLogginInterceptor: "com.squareup.okhttp3:logging-interceptor:$okHttpVersion",
+    ]
+
+    moshiVersion = '1.8.0'
+    parser = [
+            moshi        : "com.squareup.moshi:moshi:$moshiVersion",
+            moshiAdapters: "com.squareup.moshi:moshi-adapters:$moshiVersion",
+            moshiKotlin  : "com.squareup.moshi:moshi-kotlin:$moshiVersion",
+            moshiCodegen : "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion",
+    ]
+
+    junit = '4.12'
+    mockito = '2.8.9'
+    powerMockVersion = '1.7.0RC4'
+    robolecticVersion = '4.2'
+    unitTest = [
+            mockito      : "org.mockito:mockito-core:$mockito",
+            powerJunit4  : "org.powermock:powermock-module-junit4:$powerMockVersion",
+            powerMockito2: "org.powermock:powermock-api-mockito2:$powerMockVersion",
+            junit        : "junit:junit:$junit",
+            robolectric  : "org.robolectric:robolectric:$robolecticVersion",
+    ]
+
+    daggerVersion = '2.25.3'
+    di = [
+            dagger         : "com.google.dagger:dagger:$daggerVersion",
+            daggerAndroid  : "com.google.dagger:dagger-android-support:$daggerVersion",
+            daggerCompiler : "com.google.dagger:dagger-compiler:$daggerVersion",
+            daggerProcessor: "com.google.dagger:dagger-android-processor:$daggerVersion"
+    ]
+
+    kotlinVersion = '1.3.61'
+    kotlinLib = [
+            stdlib : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
+            reflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+    ]
+}

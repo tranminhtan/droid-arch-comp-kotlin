@@ -1,0 +1,42 @@
+# built application files
+*.ap_
+
+# Android Annotations
+*.apt_generated
+
+# files for the dex VM
+*.dex
+
+# Mac files
+.DS_Store
+
+# Java class files
+*.class
+
+# generated files
+bin/
+build/
+gen/
+reports/
+
+# Local configuration file (sdk path, etc)
+local.properties
+project.properties
+
+# Android Studio Files
+*.iml
+.idea/
+captures/
+*.exec
+
+# KDE file manager metadata
+.directory
+
+# Gradle files
+.gradle/
+
+# Other
+**/.repository/*
+ajcore*
+app/symbols
+

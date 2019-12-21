@@ -1,0 +1,50 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: "$rootDir/gradle/kapt.gradle"
+
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.test.app"
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation kotlinLib.stdlib
+    implementation droid.coreKtx
+    implementation droid.appcompat
+    implementation droid.constraintLayout
+
+    implementation rx.java
+    implementation rx.android
+
+    implementation network.retrofit
+    implementation network.retrofitRxJava2Adapter
+    implementation network.retrofitMoshiConverter
+    implementation parser.moshi
+    kapt parser.moshiCodegen
+
+    implementation di.dagger
+    implementation di.daggerAndroid
+    kapt di.daggerCompiler
+    kapt di.daggerProcessor
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
