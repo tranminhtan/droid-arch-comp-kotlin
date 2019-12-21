@@ -10,7 +10,7 @@ class MoshiProviderTest {
     @Test
     fun getMoshi_convertJsonString_toCurrencyRateResponse() {
         val factories = HashSet<JsonAdapter.Factory>(1)
-        factories.add(MyJsonAdapterFactory())
+        factories.add(RatesJsonAdapterFactory())
 
         val jsonAdapter: JsonAdapter<CurrencyRateResponse> =
             MoshiProvider(factories).getMoshi().adapter(CurrencyRateResponse::class.java)

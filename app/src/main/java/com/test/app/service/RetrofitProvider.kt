@@ -6,11 +6,12 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+private const val host: String = "https://revolut.duckdns.org/"
+
 class RetrofitProvider(
     private val moshi: Moshi,
     private val schedulers: Scheduler
 ) {
-    private val host = "https://revolut.duckdns.org/"
 
     fun getRetrofit(): Retrofit {
         return Retrofit.Builder()

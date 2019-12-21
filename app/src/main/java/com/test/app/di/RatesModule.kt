@@ -3,13 +3,13 @@ package com.test.app.di
 import com.test.app.annotation.ActivityScoped
 import com.test.app.service.CurrencyRateRepositoryImpl
 import com.test.app.service.CurrencyRateService
-import com.test.app.ui.MainViewModel
+import com.test.app.ui.RatesViewModel
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 
 @Module
-object MainModule {
+object RatesModule {
 
     @JvmStatic
     @ActivityScoped
@@ -21,6 +21,6 @@ object MainModule {
     @JvmStatic
     @ActivityScoped
     @Provides
-    fun provideMainViewModel(currencyRateService: CurrencyRateService) =
-        MainViewModel(CurrencyRateRepositoryImpl(currencyRateService))
+    fun provideRatesViewModel(currencyRateService: CurrencyRateService) =
+        RatesViewModel(CurrencyRateRepositoryImpl(currencyRateService))
 }

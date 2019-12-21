@@ -1,7 +1,7 @@
 package com.test.app.di
 
 import com.squareup.moshi.JsonAdapter
-import com.test.app.moshi.MyJsonAdapterFactory
+import com.test.app.moshi.RatesJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
@@ -12,5 +12,5 @@ object JsonAdapterModule {
     @JvmStatic
     @Provides
     @IntoSet
-    fun provideJsonAdapterFactory(): JsonAdapter.Factory = MyJsonAdapterFactory()
+    fun provideJsonAdapterFactory(): JsonAdapter.Factory = RatesJsonAdapterFactory()
 }
