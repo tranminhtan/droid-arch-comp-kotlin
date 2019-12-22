@@ -15,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        dataBinding.enabled = true
     }
     buildTypes {
         release {
@@ -22,20 +23,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 dependencies {
+    droid.values().forEach { implementation it }
+    rx.values().forEach { implementation it }
+    network.values().forEach { implementation it }
+
     implementation kotlinLib.stdlib
-    implementation droid.coreKtx
-    implementation droid.appcompat
-    implementation droid.constraintLayout
-
-    implementation rx.java
-    implementation rx.android
-
-    implementation network.retrofit
-    implementation network.retrofitRxJava2Adapter
-    implementation network.retrofitMoshiConverter
     implementation parser.moshi
     kapt parser.moshiCodegen
 

@@ -6,6 +6,7 @@ ext {
             coreKtx         : "androidx.core:core-ktx:$androidXVersion",
             appcompat       : "androidx.appcompat:appcompat:$androidXVersion",
             constraintLayout: "androidx.constraintlayout:constraintlayout:$androidXConstraintLayoutVersion",
+            recyclerView    : "androidx.recyclerview:recyclerview:$androidXVersion"
     ]
 
     rxJavaVersion = '2.2.13'
