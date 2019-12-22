@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-private const val host: String = "https://revolut.duckdns.org/"
+private const val HOST: String = "https://revolut.duckdns.org/"
 
 class RetrofitProvider(
     private val moshi: Moshi,
@@ -17,7 +17,7 @@ class RetrofitProvider(
         return Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(schedulers))
-            .baseUrl(host)
+            .baseUrl(HOST)
             .build()
     }
 }

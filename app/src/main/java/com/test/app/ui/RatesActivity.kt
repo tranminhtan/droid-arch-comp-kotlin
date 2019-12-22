@@ -1,42 +1,37 @@
 package com.test.app.ui
 
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import com.test.app.BR
 import com.test.app.R
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.internal.functions.Functions
 import timber.log.Timber
-import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RatesActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var viewModel: RatesViewModel
-
     private lateinit var disposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding: ViewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.setVariable(BR.vm, viewModel)
         title = getString(R.string.app_name)
-
-        disposable = Observable.interval(1, TimeUnit.SECONDS, Schedulers.computation())
-            .switchMapSingle {
-                viewModel.getCurrencyRates("EUR")
-                    .map { it.rates }
-                    .onErrorReturnItem(Collections.emptyMap())
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                Timber.d("Test ${it.size}")
-            }, { Timber.e(it) })
     }
 
-    override fun onDestroy() {
+    override fun onResume() {
+        super.onResume()
+        disposable = viewModel.updateCurrencyRates()
+            .subscribe(Functions.emptyConsumer(), Consumer { Timber.e(it) })
+    }
+
+    override fun onStop() {
+        super.onStop()
         disposable.dispose()
-        super.onDestroy()
     }
 }
