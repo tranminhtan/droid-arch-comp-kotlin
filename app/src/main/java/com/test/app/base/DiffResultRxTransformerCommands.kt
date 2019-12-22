@@ -17,7 +17,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.reactivestreams.Publisher
 
-internal class DiffResultRxTransformerCommands<T>(private val callback: Callback<T>) : RxTransformer.Commands<List<T>, List<T>> {
+internal class DiffResultRxTransformerCommands<T>(private val callback: Callback<T>) :
+    Commands<List<T>, List<T>> {
     internal interface Callback<T> {
         fun getList(): List<T>
 
@@ -35,7 +36,12 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
         return upstream
             .distinctUntilChanged()
             .observeOn(Schedulers.computation())
-            .concatMap { newList -> calculateDiffResult(callback.getList(), newList).toObservable() }
+            .concatMap { newList ->
+                calculateDiffResult(
+                    callback.getList(),
+                    newList
+                ).toObservable()
+            }
     }
 
     override fun applyCompletable(upstream: Completable): CompletableSource {
@@ -102,11 +108,12 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
         oldList: List<T>,
         newList: List<T>
     ): Single<List<T>> {
-        val diffResult = (if (oldList.isNotEmpty()) calculateDiff(oldList, newList) else null) ?: return Single
-            .just(newList)
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnEvent { newList1, _ -> callback.setList(newList1) }
-            .observeOn(Schedulers.computation())
+        val diffResult =
+            (if (oldList.isNotEmpty()) calculateDiff(oldList, newList) else null) ?: return Single
+                .just(newList)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnEvent { newList1, _ -> callback.setList(newList1) }
+                .observeOn(Schedulers.computation())
 
         return Single
             .just(diffResult)

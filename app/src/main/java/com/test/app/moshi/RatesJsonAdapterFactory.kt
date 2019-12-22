@@ -9,7 +9,11 @@ import java.lang.reflect.Type
 
 // Every module has one Factory
 class RatesJsonAdapterFactory : JsonAdapter.Factory {
-    override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
+    override fun create(
+        type: Type,
+        annotations: MutableSet<out Annotation>,
+        moshi: Moshi
+    ): JsonAdapter<*>? {
         if (annotations.isNotEmpty()) return null
         return when (Types.getRawType(type)) {
             CurrencyRateResponse::class.java -> CurrencyRateResponseJsonAdapter(moshi).nullSafe()

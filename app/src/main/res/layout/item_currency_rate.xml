@@ -54,6 +54,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:hint="0"
             android:text="@{item.rate}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
@@ -61,7 +62,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor,TextFields"
+            tools:ignore="Autofill,HardcodedText,LabelFor,TextFields"
             tools:text="123.00" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

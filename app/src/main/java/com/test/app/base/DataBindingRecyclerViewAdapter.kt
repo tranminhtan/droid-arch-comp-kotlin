@@ -13,7 +13,8 @@ abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
     rxTransformer: RxTransformer<List<T>, List<T>>? = null
 ) :
     DiffResultRecyclerViewAdapter<T, RecyclingViewHolder>(rxTransformer) {
-    private var layoutInflater: LayoutInflater? = if (context == null) null else LayoutInflater.from(context)
+    private var layoutInflater: LayoutInflater? =
+        if (context == null) null else LayoutInflater.from(context)
 
     protected open fun setData(
         position: Int,
@@ -52,9 +53,15 @@ abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
         viewType: Int
     ): RecyclingViewHolder {
         layoutInflater =
-            layoutInflater ?: LayoutInflater.from(parent.context) ?: throw IllegalStateException("Missing LayoutInflater")
+            layoutInflater ?: LayoutInflater.from(parent.context)
+                    ?: throw IllegalStateException("Missing LayoutInflater")
 
-        val binder = DataBindingUtil.inflate<ViewDataBinding>(layoutInflater!!, getLayoutIdForViewType(viewType), parent, false)
+        val binder = DataBindingUtil.inflate<ViewDataBinding>(
+            layoutInflater!!,
+            getLayoutIdForViewType(viewType),
+            parent,
+            false
+        )
         return getViewHolder(binder, viewType)
     }
 
@@ -67,7 +74,13 @@ abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
 
                 @Suppress("UNCHECKED_CAST") val viewHolder = holder as DataBindingViewHolder<T>
                 val item = getItemAtPosition(position)
-                setData(position, viewHolder.binder, holder.itemView, getItemViewType(position), item)
+                setData(
+                    position,
+                    viewHolder.binder,
+                    holder.itemView,
+                    getItemViewType(position),
+                    item
+                )
                 viewHolder.setData(item)
                 viewHolder
                     .binder

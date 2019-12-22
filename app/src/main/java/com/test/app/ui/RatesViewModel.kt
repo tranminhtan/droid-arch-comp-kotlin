@@ -2,6 +2,7 @@ package com.test.app.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.VisibleForTesting
+import androidx.collection.ArrayMap
 import com.test.app.base.DataBindingRecyclerViewAdapter
 import com.test.app.base.ResourcesProvider
 import com.test.app.model.CurrencyRateResponse
@@ -12,28 +13,31 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 private const val BASE_CURRENCY = "EUR"
+private const val INTERVAL_IN_SEC = 3L
 
 class RatesViewModel(
     private val repository: CurrencyRateRepository,
     private val resourcesProvider: ResourcesProvider,
     val adapter: DataBindingRecyclerViewAdapter<RatesItem>
 ) {
-    private val flagIconsCache: MutableMap<String, Int> = HashMap()
+    private val flagIconsCache: MutableMap<String, Int> = ArrayMap()
 
     fun updateCurrencyRates(): Observable<List<RatesItem>> {
-        return Observable.interval(0, 1, TimeUnit.SECONDS, Schedulers.computation())
+        return Observable.interval(0, INTERVAL_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
             .switchMapSingle {
-                getCurrencyRates(BASE_CURRENCY).onErrorReturnItem(Collections.emptyList())
+                getCurrencyRates(BASE_CURRENCY)
+                    .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
             }
+            .startWith(repository.getPlaceHolderRates())
+            .filter { it.isNotEmpty() }
             .compose(adapter.asRxTransformer().forObservable())
     }
 
     @VisibleForTesting
     fun getCurrencyRates(base: String): Single<List<RatesItem>> {
-        return repository.getCurrencyRate(base)
+        return repository.getCurrencyRates(base)
             .flatMap { res: CurrencyRateResponse ->
                 Observable.fromIterable(res.rates.entries)
                     .map { entry -> toRatesItem(entry) }

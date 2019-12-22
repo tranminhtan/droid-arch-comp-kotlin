@@ -24,7 +24,7 @@ class CurrencyRateRepositoryTest : TestBase() {
         Mockito.doReturn(Single.just(CurrencyRateResponse("WrongBase", "", Collections.emptyMap())))
             .`when`(currencyRateService).getCurrencyRates(base)
 
-        currencyRateRepository.getCurrencyRate(base)
+        currencyRateRepository.getCurrencyRates(base)
             .test()
             .assertError(IllegalStateException::class.java)
             .assertTerminated()
@@ -39,7 +39,7 @@ class CurrencyRateRepositoryTest : TestBase() {
         Mockito.doReturn(Single.just(response))
             .`when`(currencyRateService).getCurrencyRates(base)
 
-        currencyRateRepository.getCurrencyRate(base)
+        currencyRateRepository.getCurrencyRates(base)
             .test()
             .assertNoErrors()
             .assertTerminated()

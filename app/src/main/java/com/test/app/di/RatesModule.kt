@@ -1,7 +1,6 @@
 package com.test.app.di
 
 import com.test.app.annotation.ActivityScoped
-import com.test.app.base.ResourcesProvider
 import com.test.app.base.ResourcesProviderImpl
 import com.test.app.service.CurrencyRateRepositoryImpl
 import com.test.app.service.CurrencyRateService
