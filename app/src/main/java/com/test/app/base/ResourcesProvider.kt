@@ -22,7 +22,7 @@ class ResourcesProviderImpl(private val context: Context) : ResourcesProvider {
             context.resources.getIdentifier(resIcon, "drawable", context.packageName)
 
         } catch (e: RuntimeException) {
-            Timber.w("No flag icon for %s", resIcon)
+            Timber.w("No flag icon found for %s", resIcon)
             R.drawable.ic_place_holder
         }
     }

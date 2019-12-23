@@ -10,12 +10,12 @@ import com.test.app.service.CurrencyRateRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import java.util.Collections
+import java.util.Currency
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 private const val BASE_CURRENCY = "EUR"
-private const val INTERVAL_IN_SEC = 3L
+private const val INTERVAL_IN_SEC = 1L
 
 class RatesViewModel(
     private val repository: CurrencyRateRepository,
