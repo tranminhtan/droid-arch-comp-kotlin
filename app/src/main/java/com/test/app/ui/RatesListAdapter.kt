@@ -15,4 +15,8 @@ class RatesListAdapter : DataBindingRecyclerViewAdapter<RatesItem>() {
     override fun setData(binder: ViewDataBinding, view: View, viewType: Int, data: RatesItem) {
         binder.setVariable(BR.item, data)
     }
+
+    override fun areItemsTheSame(oldItem: RatesItem, newItem: RatesItem): Boolean {
+        return oldItem.code == newItem.code
+    }
 }

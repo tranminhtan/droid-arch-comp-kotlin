@@ -18,7 +18,8 @@ import io.reactivex.schedulers.Schedulers
 import org.reactivestreams.Publisher
 
 internal class DiffResultRxTransformerCommands<T>(private val callback: Callback<T>) :
-    Commands<List<T>, List<T>> {
+    RxTransformer.Commands<List<T>, List<T>> {
+
     internal interface Callback<T> {
         fun getList(): List<T>
 
@@ -30,6 +31,10 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
             diffResult: DiffUtil.DiffResult,
             list: List<T>?
         )
+
+        fun areItemsTheSame(oldItem: T, newItem: T): Boolean
+
+        fun areContentsTheSame(oldItem: T, newItem: T): Boolean
     }
 
     override fun applyObs(upstream: Observable<List<T>>): ObservableSource<List<T>> {
@@ -92,14 +97,14 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
                 oldItemPosition: Int,
                 newItemPosition: Int
             ): Boolean {
-                return oldList[oldItemPosition] == newList[newItemPosition]
+                return callback.areItemsTheSame(oldList[oldItemPosition], newList[newItemPosition])
             }
 
             override fun areContentsTheSame(
                 oldItemPosition: Int,
                 newItemPosition: Int
             ): Boolean {
-                return oldList[oldItemPosition] == newList[newItemPosition]
+                return callback.areContentsTheSame(oldList[oldItemPosition], newList[newItemPosition])
             }
         })
     }

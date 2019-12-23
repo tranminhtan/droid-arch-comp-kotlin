@@ -18,6 +18,15 @@ import org.reactivestreams.Publisher
 
 @Suppress("unused")
 class RxTransformer<T, R>(private val commands: Commands<T, R>) {
+
+    interface Commands<T, R> {
+        fun applyObs(upstream: Observable<T>): ObservableSource<R>
+        fun applyCompletable(upstream: Completable): CompletableSource
+        fun applyPublisher(upstream: Flowable<T>): Publisher<R>
+        fun applySingle(upstream: Single<T>): SingleSource<R>
+        fun applyMaybe(upstream: Maybe<T>): MaybeSource<R>
+    }
+
     fun forObservable(): ObservableTransformer<T, R> {
         return ObservableTransformer { upstream -> commands.applyObs(upstream) }
     }
@@ -37,12 +46,4 @@ class RxTransformer<T, R>(private val commands: Commands<T, R>) {
     fun forMaybe(): MaybeTransformer<T, R> {
         return MaybeTransformer { upstream -> commands.applyMaybe(upstream) }
     }
-}
-
-interface Commands<T, R> {
-    fun applyObs(upstream: Observable<T>): ObservableSource<R>
-    fun applyCompletable(upstream: Completable): CompletableSource
-    fun applyPublisher(upstream: Flowable<T>): Publisher<R>
-    fun applySingle(upstream: Single<T>): SingleSource<R>
-    fun applyMaybe(upstream: Maybe<T>): MaybeSource<R>
 }

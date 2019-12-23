@@ -68,6 +68,14 @@ abstract class DiffResultRecyclerViewAdapter<T1, T2 : RecyclerView.ViewHolder> @
         diffResult.dispatchUpdatesTo(this)
     }
 
+    override fun areItemsTheSame(oldItem: T1, newItem: T1): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: T1, newItem: T1): Boolean {
+        return oldItem == newItem
+    }
+
     override fun getItemCount(): Int {
         return getList().size
     }

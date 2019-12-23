@@ -11,8 +11,8 @@ import androidx.databinding.ViewDataBinding
 abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
     context: Context? = null,
     rxTransformer: RxTransformer<List<T>, List<T>>? = null
-) :
-    DiffResultRecyclerViewAdapter<T, RecyclingViewHolder>(rxTransformer) {
+) : DiffResultRecyclerViewAdapter<T, RecyclingViewHolder>(rxTransformer) {
+
     private var layoutInflater: LayoutInflater? =
         if (context == null) null else LayoutInflater.from(context)
 
