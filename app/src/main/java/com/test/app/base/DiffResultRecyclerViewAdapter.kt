@@ -76,6 +76,10 @@ abstract class DiffResultRecyclerViewAdapter<T1, T2 : RecyclerView.ViewHolder> @
         return oldItem == newItem
     }
 
+    override fun getChangePayload(oldItem: T1, newItem: T1): Any? {
+        return null
+    }
+
     override fun getItemCount(): Int {
         return getList().size
     }

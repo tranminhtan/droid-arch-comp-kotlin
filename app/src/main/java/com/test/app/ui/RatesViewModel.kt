@@ -15,7 +15,7 @@ import java.util.Currency
 import java.util.concurrent.TimeUnit
 
 private const val BASE_CURRENCY = "EUR"
-private const val INTERVAL_IN_SEC = 3L
+private const val INTERVAL_IN_SEC = 1L
 
 class RatesViewModel(
     private val repository: CurrencyRateRepository,

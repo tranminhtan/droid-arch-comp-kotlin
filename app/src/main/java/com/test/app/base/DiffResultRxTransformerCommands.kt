@@ -35,6 +35,8 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
         fun areItemsTheSame(oldItem: T, newItem: T): Boolean
 
         fun areContentsTheSame(oldItem: T, newItem: T): Boolean
+
+        fun getChangePayload(oldItem: T, newItem: T): Any?
     }
 
     override fun applyObs(upstream: Observable<List<T>>): ObservableSource<List<T>> {
@@ -104,7 +106,15 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
                 oldItemPosition: Int,
                 newItemPosition: Int
             ): Boolean {
-                return callback.areContentsTheSame(oldList[oldItemPosition], newList[newItemPosition])
+                return callback.areContentsTheSame(
+                    oldList[oldItemPosition],
+                    newList[newItemPosition]
+                )
+            }
+
+            override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+                return callback.getChangePayload(oldList[oldItemPosition], newList[newItemPosition])
+                    ?: super.getChangePayload(oldItemPosition, newItemPosition)
             }
         })
     }

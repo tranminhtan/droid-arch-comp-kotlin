@@ -19,4 +19,8 @@ class RatesListAdapter : DataBindingRecyclerViewAdapter<RatesItem>() {
     override fun areItemsTheSame(oldItem: RatesItem, newItem: RatesItem): Boolean {
         return oldItem.code == newItem.code
     }
+
+    override fun getChangePayload(oldItem: RatesItem, newItem: RatesItem): Any? {
+        return newItem.rate
+    }
 }
