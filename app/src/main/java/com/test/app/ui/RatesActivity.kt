@@ -26,7 +26,7 @@ class RatesActivity : DaggerAppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        disposable = viewModel.updateCurrencyRates()
+        disposable = viewModel.updateCurrencyRatesInterval()
             .subscribe(Functions.emptyConsumer(), Consumer { Timber.e(it) })
     }
 

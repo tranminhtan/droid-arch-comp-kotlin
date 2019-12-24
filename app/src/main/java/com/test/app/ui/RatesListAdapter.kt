@@ -5,8 +5,10 @@ import androidx.databinding.ViewDataBinding
 import com.test.app.BR
 import com.test.app.R
 import com.test.app.base.DataBindingRecyclerViewAdapter
+import com.test.app.ui.list.RatesItem
+import com.test.app.ui.list.RatesItemViewModel
 
-class RatesListAdapter : DataBindingRecyclerViewAdapter<RatesItem>() {
+class RatesListAdapter(private val ratesItemViewModel: RatesItemViewModel) : DataBindingRecyclerViewAdapter<RatesItem>() {
 
     override fun getLayoutIdForViewType(viewType: Int): Int {
         return R.layout.item_currency_rate
@@ -14,6 +16,7 @@ class RatesListAdapter : DataBindingRecyclerViewAdapter<RatesItem>() {
 
     override fun setData(binder: ViewDataBinding, view: View, viewType: Int, data: RatesItem) {
         binder.setVariable(BR.item, data)
+        binder.setVariable(BR.itemVm, ratesItemViewModel)
     }
 
     override fun areItemsTheSame(oldItem: RatesItem, newItem: RatesItem): Boolean {

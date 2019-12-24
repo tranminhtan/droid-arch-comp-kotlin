@@ -7,6 +7,8 @@ import com.test.app.service.CurrencyRateService
 import com.test.app.ui.RatesActivity
 import com.test.app.ui.RatesListAdapter
 import com.test.app.ui.RatesViewModel
+import com.test.app.ui.list.OnClickRatesItemStream
+import com.test.app.ui.list.RatesItemViewModel
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -24,14 +26,21 @@ object RatesModule {
     @JvmStatic
     @ActivityScoped
     @Provides
+    fun provideOnClickItemStream() = OnClickRatesItemStream()
+
+    @JvmStatic
+    @ActivityScoped
+    @Provides
     fun provideRatesViewModel(
         activity: RatesActivity,
-        currencyRateService: CurrencyRateService
+        currencyRateService: CurrencyRateService,
+        onClickRatesItemStream: OnClickRatesItemStream
     ): RatesViewModel {
         return RatesViewModel(
             CurrencyRateRepositoryImpl(currencyRateService),
             ResourcesProviderImpl(activity),
-            RatesListAdapter()
+            onClickRatesItemStream,
+            RatesListAdapter(RatesItemViewModel(onClickRatesItemStream))
         )
     }
 }

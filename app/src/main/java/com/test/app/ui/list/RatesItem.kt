@@ -1,4 +1,4 @@
-package com.test.app.ui
+package com.test.app.ui.list
 
 import androidx.annotation.DrawableRes
 
