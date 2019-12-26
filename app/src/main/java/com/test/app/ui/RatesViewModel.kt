@@ -1,18 +1,17 @@
 package com.test.app.ui
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.VisibleForTesting
 import androidx.collection.ArrayMap
-import com.test.app.base.DataBindingRecyclerViewAdapter
 import com.test.app.base.ResourcesProvider
-import com.test.app.model.CurrencyRateResponse
 import com.test.app.service.CurrencyRateRepository
+import com.test.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
 import com.test.app.ui.list.OnClickRatesItemStream
 import com.test.app.ui.list.RatesItem
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.MathContext
 import java.util.Collections
@@ -25,45 +24,67 @@ class RatesViewModel(
     private val repository: CurrencyRateRepository,
     private val resourcesProvider: ResourcesProvider,
     private val onClickRatesItemStream: OnClickRatesItemStream,
-    val adapter: DataBindingRecyclerViewAdapter<RatesItem>
+    val adapter: RatesListAdapter
 ) {
     private val flagIconsCache: MutableMap<String, Int> = ArrayMap()
     private val displayNamesCache: MutableMap<String, String> = ArrayMap()
+    private val valveSubject = BehaviorSubject.create<RatesItem>()
 
-    fun updateCurrencyRatesInterval(): Observable<List<RatesItem>> {
-        val intervalObs = Observable.interval(0, INTERVAL_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
-        val onClickItemObs = onClickRatesItemStream.observeClickItem().distinctUntilChanged()
-
-        return Observable.combineLatest(intervalObs, onClickItemObs, BiFunction { _: Long, item: RatesItem -> item })
-            .subscribeOn(Schedulers.computation())
-            .switchMapSingle {
-                getCurrencyRates(it.code, it.rate)
-                    .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
+    fun observeOnItemClick(): Observable<Any> {
+        return onClickRatesItemStream.observeClickItem()
+            .distinctUntilChanged()
+            .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop
+            .switchMapSingle { item: RatesItem ->
+                adapter.moveSelectedItemToTop(item).flatMap { hasMoved: Boolean ->
+                    Timber.d("Moved Item %s", hasMoved)
+                    val delay = if (hasMoved) 5L else 0
+                    Single.timer(delay, TimeUnit.SECONDS, Schedulers.computation())
+                        .doOnSuccess { emitRatesItem(item) }
+                }
             }
+    }
+
+    fun observeGetCurrencyRatesWithInterval(): Observable<List<RatesItem>> {
+        return valveSubject.hide()
+            .doOnNext { Timber.d("valve value %s", it.toString()) }
+            .switchMap { item: RatesItem ->
+                Observable.just(item)
+                    .takeWhile { it != EMPTY_RATES_ITEM }
+                    .switchMap { validItem: RatesItem ->
+                        intervalObs()
+                            .switchMapSingle {
+                                getCurrencyRates(validItem.code, validItem.rate)
+                                    .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
+                            }
+                    }
+                    .doOnNext { Timber.d("After call API %s", it.toString()) }
+            }
+            .subscribeOn(Schedulers.computation())
             .startWith(repository.getPlaceHolderRates()) // Display offline data first
             .filter { it.isNotEmpty() }
             .compose(adapter.asRxTransformer().forObservable())
     }
 
-    @VisibleForTesting
-    fun getCurrencyRates(baseCode: String, baseRate: String): Single<List<RatesItem>> {
+    private fun emitRatesItem(item: RatesItem) {
+        Timber.d("Emit item %s", item.toString())
+        valveSubject.onNext(item)
+    }
+
+    private fun intervalObs(): Observable<Long> {
+        return Observable.interval(0, INTERVAL_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
+    }
+
+    // Get currency rates and convert to RatesItem list
+    private fun getCurrencyRates(baseCode: String, baseRate: String): Single<List<RatesItem>> {
         return repository.getCurrencyRates(baseCode)
-            .flatMap { res: CurrencyRateResponse ->
-                Observable.fromIterable(res.rates.entries)
-                    .map { entry -> toRatesItem(entry, baseRate) }
-                    .toList()
-                    .map {
-                        if (it.isEmpty()) {
-                            it
-                        } else {
-                            // Add base currency as the first item of the list
-                            val newList = ArrayList<RatesItem>(it.size + 1)
-                            newList.add(toRatesItem(res.base, baseRate))
-                            newList.addAll(it)
-                            newList
-                        }
-                    }
-            }
+            .flatMapObservable { Observable.fromIterable(it.entries) }
+            .map { entry -> toRatesItem(entry, baseRate) }
+            .collectInto(initListWithBaseItem(baseCode, baseRate), { list, item -> list.add(item) })
+            .map { it }
+    }
+
+    private fun initListWithBaseItem(code: String, rate: String): MutableList<RatesItem> {
+        return mutableListOf(toRatesItem(code, rate))
     }
 
     private fun toRatesItem(entry: Map.Entry<String, Double>, baseRate: String): RatesItem {

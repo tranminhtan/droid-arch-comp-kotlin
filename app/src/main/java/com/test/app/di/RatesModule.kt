@@ -31,16 +31,22 @@ object RatesModule {
     @JvmStatic
     @ActivityScoped
     @Provides
+    fun provideAdapter(onClickRatesItemStream: OnClickRatesItemStream) = RatesListAdapter(RatesItemViewModel(onClickRatesItemStream))
+
+    @JvmStatic
+    @ActivityScoped
+    @Provides
     fun provideRatesViewModel(
         activity: RatesActivity,
         currencyRateService: CurrencyRateService,
-        onClickRatesItemStream: OnClickRatesItemStream
+        onClickRatesItemStream: OnClickRatesItemStream,
+        adapter: RatesListAdapter
     ): RatesViewModel {
         return RatesViewModel(
             CurrencyRateRepositoryImpl(currencyRateService),
             ResourcesProviderImpl(activity),
             onClickRatesItemStream,
-            RatesListAdapter(RatesItemViewModel(onClickRatesItemStream))
+            adapter
         )
     }
 }

@@ -68,6 +68,14 @@ abstract class DiffResultRecyclerViewAdapter<T1, T2 : RecyclerView.ViewHolder> @
         diffResult.dispatchUpdatesTo(this)
     }
 
+    override fun setListWithoutNotifyChanged(list: List<T1>?) {
+        if (list == null) {
+            return
+        }
+
+        this.list = list.toList()
+    }
+
     override fun areItemsTheSame(oldItem: T1, newItem: T1): Boolean {
         return oldItem == newItem
     }

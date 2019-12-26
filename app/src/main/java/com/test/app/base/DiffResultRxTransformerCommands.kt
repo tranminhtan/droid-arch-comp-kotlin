@@ -32,6 +32,9 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
             list: List<T>?
         )
 
+        @UiThread
+        fun setListWithoutNotifyChanged(list: List<T>?)
+
         fun areItemsTheSame(oldItem: T, newItem: T): Boolean
 
         fun areContentsTheSame(oldItem: T, newItem: T): Boolean
