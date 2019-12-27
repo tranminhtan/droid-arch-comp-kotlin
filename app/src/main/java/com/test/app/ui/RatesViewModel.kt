@@ -35,12 +35,17 @@ class RatesViewModel(
             .distinctUntilChanged()
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop updating currency rates
             .switchMapSingle { item: RatesItem ->
-                adapter.moveSelectedItemToTop(item).flatMap { hasMoved: Boolean ->
-                    Timber.d("Moved Item %s", hasMoved)
-                    val delay = if (hasMoved) 500L else 0 // Delay a bit for better UX
-                    Single.timer(delay, TimeUnit.MILLISECONDS, Schedulers.computation())
-                        .doOnSuccess { emitRatesItem(item) }
-                }
+                adapter.moveSelectedItemToTop(item)
+                    .flatMap {
+                        if (it.isNotEmpty()) {
+                            Single.just(it).compose(adapter.asRxTransformer().forSingle())
+                        } else {
+                            Single.just(it)
+                        }
+                    }
+                    .doOnSuccess {
+                        emitRatesItem(item)
+                    }
             }
     }
 

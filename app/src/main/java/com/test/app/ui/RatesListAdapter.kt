@@ -32,10 +32,10 @@ class RatesListAdapter(private val ratesItemViewModel: RatesItemViewModel) : Dat
     }
 
     @UiThread
-    fun moveSelectedItemToTop(item: RatesItem): Single<Boolean> {
+    fun moveSelectedItemToTop(item: RatesItem): Single<List<RatesItem>> {
         return Single.fromCallable(Callable {
-            if (getList().isNotEmpty() && item != CurrencyRateRepository.BASE_RATES_ITEM) {
-                val newList = getList().toMutableList()
+            val newList = getList().toMutableList()
+            if (newList.isNotEmpty() && item != CurrencyRateRepository.BASE_RATES_ITEM) {
                 val currentPos = newList.indexOf(item)
 
                 if (currentPos > 0) {
@@ -44,10 +44,14 @@ class RatesListAdapter(private val ratesItemViewModel: RatesItemViewModel) : Dat
                     }
                     setListWithoutNotifyChanged(newList)
                     notifyItemMoved(currentPos, 0)
-                    return@Callable true
+
+                    // Update editable state
+                    newList[0] = newList[0].copy(editable = true)
+                    newList[1] = newList[1].copy(editable = false)
+                    return@Callable newList
                 }
             }
-            false
+            emptyList<RatesItem>()
         })
     }
 }

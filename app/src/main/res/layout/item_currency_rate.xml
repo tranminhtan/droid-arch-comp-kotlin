@@ -21,7 +21,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
+        android:background="?selectableItemBackground"
         android:onClick="@{() -> itemVm.onClickItemRate(item)}"
         android:padding="16dp"
         >
@@ -66,10 +66,15 @@
             />
 
         <EditText
+            android:id="@+id/et_rate1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="end"
             android:hint="0"
+            android:imeOptions="actionDone"
             android:inputType="number"
+            android:maxLines="1"
             android:text="@{item.rate}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
@@ -82,9 +87,13 @@
             tools:text="123.00"
             />
 
-        <TextView
+        <EditText
+            android:id="@+id/et_rate2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="false"
+            android:hint="0"
+            android:maxLines="1"
             android:text="@{item.rate}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
@@ -93,6 +102,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:visibility="@{!item.editable}"
+            tools:ignore="HardcodedText"
             tools:text="123.00"
             tools:visibility="gone"
             />
