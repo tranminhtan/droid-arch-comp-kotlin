@@ -26,19 +26,19 @@ class RatesViewModel(
     private val onClickRatesItemStream: OnClickRatesItemStream,
     val adapter: RatesListAdapter
 ) {
-    private val flagIconsCache: MutableMap<String, Int> = ArrayMap()
-    private val displayNamesCache: MutableMap<String, String> = ArrayMap()
+    private val flagIconsCache = ArrayMap<String, Int>()
+    private val displayNamesCache = ArrayMap<String, String>()
     private val valveSubject = BehaviorSubject.create<RatesItem>()
 
     fun observeOnItemClick(): Observable<Any> {
         return onClickRatesItemStream.observeClickItem()
             .distinctUntilChanged()
-            .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop
+            .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop updating currency rates
             .switchMapSingle { item: RatesItem ->
                 adapter.moveSelectedItemToTop(item).flatMap { hasMoved: Boolean ->
                     Timber.d("Moved Item %s", hasMoved)
-                    val delay = if (hasMoved) 5L else 0
-                    Single.timer(delay, TimeUnit.SECONDS, Schedulers.computation())
+                    val delay = if (hasMoved) 500L else 0 // Delay a bit for better UX
+                    Single.timer(delay, TimeUnit.MILLISECONDS, Schedulers.computation())
                         .doOnSuccess { emitRatesItem(item) }
                 }
             }
@@ -84,7 +84,7 @@ class RatesViewModel(
     }
 
     private fun initListWithBaseItem(code: String, rate: String): MutableList<RatesItem> {
-        return mutableListOf(toRatesItem(code, rate))
+        return mutableListOf(toRatesItem(code, rate, true))
     }
 
     private fun toRatesItem(entry: Map.Entry<String, Double>, baseRate: String): RatesItem {
@@ -92,8 +92,8 @@ class RatesViewModel(
         return toRatesItem(entry.key, calculatedRate.toPlainString())
     }
 
-    private fun toRatesItem(code: String, rate: String): RatesItem {
-        return RatesItem(code, getDisplayName(code), rate, getFlagRes(code))
+    private fun toRatesItem(code: String, rate: String, enabled: Boolean = false): RatesItem {
+        return RatesItem(code, getDisplayName(code), rate, getFlagRes(code), enabled)
     }
 
     @DrawableRes

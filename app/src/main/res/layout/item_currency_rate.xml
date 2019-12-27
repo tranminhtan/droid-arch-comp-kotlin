@@ -35,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:setImageResource="@{item.flagIconRes}"
-            tools:src="@drawable/ic_flag_usd"
+            tools:src="@drawable/ic_flag_gbp"
             />
 
         <TextView
@@ -50,7 +50,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/ic_flag"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="USD"
+            tools:text="GBP"
             />
 
         <TextView
@@ -62,14 +62,14 @@
             android:textSize="@dimen/text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/ic_flag"
-            tools:text="US Dollar"
+            tools:text="British Pound"
             />
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:focusable="false"
             android:hint="0"
+            android:inputType="number"
             android:text="@{item.rate}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
@@ -77,8 +77,24 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,HardcodedText,LabelFor,TextFields"
+            app:visibility="@{item.editable}"
+            tools:ignore="HardcodedText"
             tools:text="123.00"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.rate}"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibility="@{!item.editable}"
+            tools:text="123.00"
+            tools:visibility="gone"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

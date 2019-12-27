@@ -30,12 +30,12 @@ class CurrencyRateRepositoryImpl(private val currencyRateService: CurrencyRateSe
 
     override fun getPlaceHolderRates(): List<RatesItem> {
         return listOf(
-            CurrencyRateRepository.BASE_RATES_ITEM.copy(rate = ""),
-            RatesItem("AUD", Currency.getInstance("AUD").displayName, "", R.drawable.ic_flag_aud),
-            RatesItem("BGN", Currency.getInstance("BGN").displayName, "", R.drawable.ic_flag_bgn),
-            RatesItem("BRL", Currency.getInstance("BRL").displayName, "", R.drawable.ic_flag_brl),
-            RatesItem("CAD", Currency.getInstance("CAD").displayName, "", R.drawable.ic_flag_cad),
-            RatesItem("CNY", Currency.getInstance("CNY").displayName, "", R.drawable.ic_flag_cny)
+            CurrencyRateRepository.BASE_RATES_ITEM.copy(rate = "0"),
+            RatesItem("AUD", Currency.getInstance("AUD").displayName, "0", R.drawable.ic_flag_aud),
+            RatesItem("BGN", Currency.getInstance("BGN").displayName, "0", R.drawable.ic_flag_bgn),
+            RatesItem("BRL", Currency.getInstance("BRL").displayName, "0", R.drawable.ic_flag_brl),
+            RatesItem("CAD", Currency.getInstance("CAD").displayName, "0", R.drawable.ic_flag_cad),
+            RatesItem("CNY", Currency.getInstance("CNY").displayName, "0", R.drawable.ic_flag_cny)
         )
     }
 }

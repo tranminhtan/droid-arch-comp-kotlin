@@ -1,6 +1,8 @@
 package com.test.app.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,11 @@ class RatesActivity : DaggerAppCompatActivity() {
         })
         binding.setVariable(BR.vm, viewModel)
         title = getString(R.string.app_name)
+
+        binding.root.recyclerView.setOnTouchListener { v, _ ->
+            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(v.windowToken, 0)
+            false
+        }
     }
 
     override fun onResume() {

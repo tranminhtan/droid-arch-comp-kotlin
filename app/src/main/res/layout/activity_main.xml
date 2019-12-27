@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <data>
 
         <variable
             name="vm"
-            type="com.test.app.ui.RatesViewModel" />
+            type="com.test.app.ui.RatesViewModel"
+            />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -17,6 +20,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:setAdapter="@{vm.adapter}"
         tools:itemCount="5"
-        tools:listitem="@layout/item_currency_rate" />
+        tools:listitem="@layout/item_currency_rate"
+        />
 
 </layout>
