@@ -18,7 +18,7 @@ import java.util.Collections
 import java.util.Currency
 import java.util.concurrent.TimeUnit
 
-private const val INTERVAL_IN_SEC = 1L
+private const val DELAY_IN_SEC = 1L
 
 class RatesViewModel(
     private val repository: CurrencyRateRepository,
@@ -49,20 +49,19 @@ class RatesViewModel(
             }
     }
 
-    fun observeGetCurrencyRatesWithInterval(): Observable<List<RatesItem>> {
+    fun observeGetCurrencyRatesInterval(): Observable<List<RatesItem>> {
         return valveSubject.hide()
             .doOnNext { Timber.d("valve value %s", it.toString()) }
             .switchMap { item: RatesItem ->
                 Observable.just(item)
                     .takeWhile { it != EMPTY_RATES_ITEM }
-                    .switchMap { validItem: RatesItem ->
-                        intervalObs()
-                            .switchMapSingle {
-                                getCurrencyRates(validItem.code, validItem.rate)
-                                    .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
-                            }
+                    .switchMapSingle { validItem: RatesItem ->
+                        getCurrencyRates(validItem.code, validItem.rate)
+                            .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
+                            .doOnSuccess { Timber.d("After call API %s", it.toString()) }
                     }
-                    .doOnNext { Timber.d("After call API %s", it.toString()) }
+                    .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
+                    .repeat()
             }
             .subscribeOn(Schedulers.computation())
             .startWith(repository.getPlaceHolderRates()) // Display offline data first
@@ -73,10 +72,6 @@ class RatesViewModel(
     private fun emitRatesItem(item: RatesItem) {
         Timber.d("Emit item %s", item.toString())
         valveSubject.onNext(item)
-    }
-
-    private fun intervalObs(): Observable<Long> {
-        return Observable.interval(0, INTERVAL_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
     }
 
     // Get currency rates and convert to RatesItem list
