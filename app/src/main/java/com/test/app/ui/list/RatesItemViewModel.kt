@@ -1,8 +1,11 @@
 package com.test.app.ui.list
 
-class RatesItemViewModel(private val onClickRatesItemStream: OnClickRatesItemStream) {
+class RatesItemViewModel(
+    private val onClickRatesItemObservable: OnClickRatesItemObservable,
+    val rateTextWatcher: RateTextWatcher
+) {
 
     fun onClickItemRate(ratesItem: RatesItem) {
-        onClickRatesItemStream.emitItem(ratesItem)
+        onClickRatesItemObservable.emitItem(ratesItem)
     }
 }

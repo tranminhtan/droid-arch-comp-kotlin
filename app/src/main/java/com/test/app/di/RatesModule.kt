@@ -7,7 +7,9 @@ import com.test.app.service.CurrencyRateService
 import com.test.app.ui.RatesActivity
 import com.test.app.ui.RatesListAdapter
 import com.test.app.ui.RatesViewModel
-import com.test.app.ui.list.OnClickRatesItemStream
+import com.test.app.ui.list.OnClickRatesItemObservable
+import com.test.app.ui.list.OnTextWatcherObservable
+import com.test.app.ui.list.RateTextWatcher
 import com.test.app.ui.list.RatesItemViewModel
 import dagger.Module
 import dagger.Provides
@@ -26,12 +28,18 @@ object RatesModule {
     @JvmStatic
     @ActivityScoped
     @Provides
-    fun provideOnClickItemStream() = OnClickRatesItemStream()
+    fun provideOnClickItemObs() = OnClickRatesItemObservable()
 
     @JvmStatic
     @ActivityScoped
     @Provides
-    fun provideAdapter(onClickRatesItemStream: OnClickRatesItemStream) = RatesListAdapter(RatesItemViewModel(onClickRatesItemStream))
+    fun provideOnRateWatcherObs() = OnTextWatcherObservable()
+
+    @JvmStatic
+    @ActivityScoped
+    @Provides
+    fun provideAdapter(onClickRatesItemObservable: OnClickRatesItemObservable, onTextWatcherObservable: OnTextWatcherObservable) =
+        RatesListAdapter(RatesItemViewModel(onClickRatesItemObservable, RateTextWatcher(onTextWatcherObservable)))
 
     @JvmStatic
     @ActivityScoped
@@ -39,13 +47,15 @@ object RatesModule {
     fun provideRatesViewModel(
         activity: RatesActivity,
         currencyRateService: CurrencyRateService,
-        onClickRatesItemStream: OnClickRatesItemStream,
+        onClickRatesItemObservable: OnClickRatesItemObservable,
+        onTextWatcherObservable: OnTextWatcherObservable,
         adapter: RatesListAdapter
     ): RatesViewModel {
         return RatesViewModel(
             CurrencyRateRepositoryImpl(currencyRateService),
             ResourcesProviderImpl(activity),
-            onClickRatesItemStream,
+            onClickRatesItemObservable,
+            onTextWatcherObservable,
             adapter
         )
     }

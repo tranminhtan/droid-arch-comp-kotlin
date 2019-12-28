@@ -6,11 +6,11 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 
 
-class OnClickRatesItemStream {
+class OnClickRatesItemObservable {
 
     private val subject: Subject<RatesItem> = BehaviorSubject.createDefault(CurrencyRateRepository.BASE_RATES_ITEM)
 
-    fun observeClickItem(): Observable<RatesItem> = subject
+    fun observeClickItem(): Observable<RatesItem> = subject.distinctUntilChanged()
 
     fun emitItem(item: RatesItem) {
         subject.onNext(item)

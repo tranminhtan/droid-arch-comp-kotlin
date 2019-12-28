@@ -7,7 +7,7 @@ import java.util.Currency
 
 interface CurrencyRateRepository {
     companion object {
-        val BASE_RATES_ITEM = RatesItem("EUR", Currency.getInstance("EUR").displayName, "1.00", R.drawable.ic_flag_eur)
+        val BASE_RATES_ITEM = RatesItem("EUR", Currency.getInstance("EUR").displayName, "100", R.drawable.ic_flag_eur)
         val EMPTY_RATES_ITEM = RatesItem("", "", "", 0)
     }
 

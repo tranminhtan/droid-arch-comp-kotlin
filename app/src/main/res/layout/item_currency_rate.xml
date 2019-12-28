@@ -79,6 +79,8 @@
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
             android:textStyle="bold"
+            app:addRateTextChangedListener="@{itemVm.rateTextWatcher}"
+            app:editableRate="@{item.editable}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

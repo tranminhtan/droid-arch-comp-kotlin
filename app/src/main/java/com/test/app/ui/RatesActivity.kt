@@ -47,12 +47,17 @@ class RatesActivity : DaggerAppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        disposable = Observable.merge(viewModel.observeOnItemClick(), viewModel.observeGetCurrencyRatesInterval())
-            .subscribe(Functions.emptyConsumer(), Consumer { Timber.e(it) })
+        disposable =
+            Observable.merge(
+                viewModel.observeOnItemClick(),
+                viewModel.observeGetCurrencyRatesInterval(),
+                viewModel.observeRateTextChange()
+            )
+                .subscribe(Functions.emptyConsumer(), Consumer { Timber.e(it) })
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         disposable.dispose()
     }
 }
