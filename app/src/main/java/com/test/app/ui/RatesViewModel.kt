@@ -10,6 +10,7 @@ import com.test.app.ui.list.OnTextWatcherObservable
 import com.test.app.ui.list.RatesItem
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -29,8 +30,11 @@ class RatesViewModel(
     private val onTextWatcherObservable: OnTextWatcherObservable,
     val adapter: RatesListAdapter
 ) {
+    // Trade off memory for better performance
     private val flagIconsCache = ArrayMap<String, Int>()
     private val displayNamesCache = ArrayMap<String, String>()
+
+    // A valve to turn on/off updating currency rate
     private val valveSubject = BehaviorSubject.create<RatesItem>()
 
     fun observeRateTextChange(): Observable<List<RatesItem>> {
@@ -42,30 +46,33 @@ class RatesViewModel(
                 val baseItem = adapter.getList()[0] // First item is base item
 
                 // Call api if the current base is 0
-                if (toBigDecimal(baseItem.rate).compareTo(BigDecimal.ZERO) == 0)
+                if (toBigDecimal(baseItem.rate).compareTo(BigDecimal.ZERO) == 0) {
                     Single.just(emptyList<RatesItem>())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
-
+                }
                 // Calculate rates locally
-                else Observable.fromIterable(adapter.getList())
-                    .map { currItem: RatesItem ->
-                        val newRate = calculateNewRate(newBase, baseItem.rate, currItem.rate)
-                        currItem.copy(rate = newRate)
-                    }
-                    .collectInto(arrayListOf<RatesItem>(), { list, item -> list.add(item) })
-                    .map {
-                        it[0] = it[0].copy(rate = newBase)
-                        it
-                    }
-                    .compose(adapter.asRxTransformer().forSingle())
-                    .delay(30, TimeUnit.SECONDS, Schedulers.computation())
-                    .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
+                else {
+                    Observable.fromIterable(adapter.getList())
+                        .map { currItem: RatesItem ->
+                            val newRate = calculateNewRate(newBase, baseItem.rate, currItem.rate)
+                            currItem.copy(rate = newRate)
+                        }
+                        .collectInto(arrayListOf<RatesItem>(), { list, item -> list.add(item) })
+                        .map {
+                            it[0] = it[0].copy(rate = newBase)
+                            it
+                        }
+                        .compose(adapter.asRxTransformer().forSingle())
+                        .delay(30, TimeUnit.SECONDS, Schedulers.computation())
+                        .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
+                }
             }
     }
 
     fun observeOnItemClick(): Observable<Any> {
         return onClickRatesItemObservable.observeClickItem()
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
+            .observeOn(AndroidSchedulers.mainThread())
             .switchMapSingle { item: RatesItem ->
                 adapter.moveSelectedItemToTop(item)
                     .flatMap {
@@ -140,10 +147,12 @@ class RatesViewModel(
         return if (toBigDecimal(newBase).compareTo(BigDecimal.ZERO) == 0
             || toBigDecimal(currBase).compareTo(BigDecimal.ZERO) == 0
             || toBigDecimal(currRate).compareTo(BigDecimal.ZERO) == 0
-        ) ""
-        else
+        ) {
+            ""
+        } else {
             toBigDecimal(newBase).multiply(toBigDecimal(currRate))
                 .divide(toBigDecimal(currBase), MathContext(PRECISION)).toPlainString()
+        }
     }
 
     @DrawableRes

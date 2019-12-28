@@ -22,9 +22,11 @@ class CurrencyRateRepositoryImpl(private val currencyRateService: CurrencyRateSe
     override fun getCurrencyRates(base: String): Single<Map<String, Double>> {
         return currencyRateService.getCurrencyRates(base)
             .map {
-                if (it.base != base)
+                if (it.base != base) {
                     throw IllegalStateException("Response's base doesn't match")
-                else it.rates
+                } else {
+                    it.rates
+                }
             }
     }
 

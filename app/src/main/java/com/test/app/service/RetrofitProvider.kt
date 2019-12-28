@@ -37,10 +37,11 @@ class RetrofitProvider(
 
     private fun getLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Timber.d(it) }).setLevel(
-            if (BuildConfig.DEBUG)
+            if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
-            else
+            } else {
                 HttpLoggingInterceptor.Level.NONE
+            }
         )
     }
 }

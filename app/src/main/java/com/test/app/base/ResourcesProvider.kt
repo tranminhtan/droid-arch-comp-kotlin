@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import com.test.app.R
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
 private const val flagIconPrefix = "ic_flag_"
 
