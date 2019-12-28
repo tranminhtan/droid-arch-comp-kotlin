@@ -8,6 +8,7 @@ import com.test.app.ui.RatesActivity
 import com.test.app.ui.RatesListAdapter
 import com.test.app.ui.RatesViewModel
 import com.test.app.ui.list.OnClickRatesItemObservable
+import com.test.app.ui.list.OnEditRateClickListener
 import com.test.app.ui.list.OnTextWatcherObservable
 import com.test.app.ui.list.RateTextWatcher
 import com.test.app.ui.list.RatesItemViewModel
@@ -17,13 +18,6 @@ import retrofit2.Retrofit
 
 @Module
 object RatesModule {
-
-    @JvmStatic
-    @ActivityScoped
-    @Provides
-    fun provideCurrencyRateService(retrofit: Retrofit): CurrencyRateService {
-        return retrofit.create(CurrencyRateService::class.java)
-    }
 
     @JvmStatic
     @ActivityScoped
@@ -38,21 +32,29 @@ object RatesModule {
     @JvmStatic
     @ActivityScoped
     @Provides
-    fun provideAdapter(onClickRatesItemObservable: OnClickRatesItemObservable, onTextWatcherObservable: OnTextWatcherObservable) =
-        RatesListAdapter(RatesItemViewModel(onClickRatesItemObservable, RateTextWatcher(onTextWatcherObservable)))
+    fun provideAdapter(
+        onClickRatesItemObservable: OnClickRatesItemObservable,
+        onTextWatcherObservable: OnTextWatcherObservable
+    ) = RatesListAdapter(
+        RatesItemViewModel(
+            onClickRatesItemObservable,
+            RateTextWatcher(onTextWatcherObservable),
+            OnEditRateClickListener()
+        )
+    )
 
     @JvmStatic
     @ActivityScoped
     @Provides
     fun provideRatesViewModel(
         activity: RatesActivity,
-        currencyRateService: CurrencyRateService,
+        retrofit: Retrofit,
         onClickRatesItemObservable: OnClickRatesItemObservable,
         onTextWatcherObservable: OnTextWatcherObservable,
         adapter: RatesListAdapter
     ): RatesViewModel {
         return RatesViewModel(
-            CurrencyRateRepositoryImpl(currencyRateService),
+            CurrencyRateRepositoryImpl(retrofit.create(CurrencyRateService::class.java)),
             ResourcesProviderImpl(activity),
             onClickRatesItemObservable,
             onTextWatcherObservable,

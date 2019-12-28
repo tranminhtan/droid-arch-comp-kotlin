@@ -37,6 +37,7 @@ class RatesViewModel(
         return onTextWatcherObservable.observeRateChange()
             .doOnNext { Timber.w("Text changed %s", it) }
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
+            .subscribeOn(Schedulers.computation())
             .switchMapSingle { newBase: String ->
                 val baseItem = adapter.getList()[0] // First item is base item
 

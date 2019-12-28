@@ -80,12 +80,13 @@
             android:textSize="@dimen/text_size"
             android:textStyle="bold"
             app:addRateTextChangedListener="@{itemVm.rateTextWatcher}"
-            app:editableRate="@{item.editable}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:onClickListener="@{itemVm.onEditRateClickListener}"
+            app:ratesItem="@{item}"
             app:visibility="@{item.editable}"
-            tools:ignore="HardcodedText"
+            tools:ignore="Autofill,HardcodedText"
             tools:text="123.00"
             />
 
@@ -104,7 +105,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:visibility="@{!item.editable}"
-            tools:ignore="HardcodedText"
+            tools:ignore="Autofill,HardcodedText,TextFields"
             tools:text="123.00"
             tools:visibility="gone"
             />
