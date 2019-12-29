@@ -20,7 +20,7 @@ import java.util.Collections
 import java.util.Currency
 import java.util.concurrent.TimeUnit
 
-private const val DELAY_IN_SEC = 10L
+private const val DELAY_IN_SEC = 1L
 private const val PRECISION = 5
 
 class RatesViewModel(
@@ -46,7 +46,9 @@ class RatesViewModel(
                 val baseItem = adapter.getList()[0] // First item is base item
 
                 // Call api if the current base is 0
-                if (toBigDecimal(baseItem.rate).compareTo(BigDecimal.ZERO) == 0) {
+                if (toBigDecimal(baseItem.rate).compareTo(BigDecimal.ZERO) == 0
+                    && toBigDecimal(newBase).compareTo(BigDecimal.ZERO) != 0
+                ) {
                     Single.just(emptyList<RatesItem>())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
                 }
@@ -63,7 +65,7 @@ class RatesViewModel(
                             it
                         }
                         .compose(adapter.asRxTransformer().forSingle())
-                        .delay(30, TimeUnit.SECONDS, Schedulers.computation())
+                        .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
                 }
             }

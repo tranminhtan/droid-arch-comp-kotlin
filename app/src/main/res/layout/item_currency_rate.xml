@@ -75,6 +75,7 @@
             android:imeOptions="actionDone"
             android:inputType="number"
             android:maxLines="1"
+            android:maxLength="8"
             android:text="@{item.rate}"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size"
