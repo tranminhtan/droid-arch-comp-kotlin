@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="RatesText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:hint">"0"</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">start</item>
+    </style>
+
 </resources>
