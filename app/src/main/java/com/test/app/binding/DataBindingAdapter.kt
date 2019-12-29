@@ -14,8 +14,11 @@ fun setVisibility(view: View, visible: Boolean) {
 @BindingAdapter(value = ["addRateTextChangedListener", "ratesItem"], requireAll = true)
 fun addTextChangedListener(editText: EditText, rateTextWatcher: RateTextWatcher, ratesItem: RatesItem) {
     if (ratesItem.editable) {
+        editText.removeTextChangedListener(rateTextWatcher)
         rateTextWatcher.editableText = editText.editableText
+
         editText.addTextChangedListener(rateTextWatcher)
+        editText.setSelection(editText.text.length)
     } else {
         editText.removeTextChangedListener(rateTextWatcher)
     }

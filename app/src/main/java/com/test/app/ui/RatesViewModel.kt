@@ -86,16 +86,13 @@ class RatesViewModel(
                             Single.just(it)
                         }
                     }
-                    .doOnSuccess {
-                        emitRatesItem(item)
-                    }
+                    .doOnSuccess { emitRatesItem(item) }
             }
     }
 
     fun observeGetCurrencyRatesInterval(): Observable<List<RatesItem>> {
-        return valveSubject.hide()
+        return valveSubject
             .distinctUntilChanged()
-            .doOnNext { Timber.d("valve value %s", it.toString()) }
             .subscribeOn(Schedulers.computation())
             .switchMap { item: RatesItem ->
                 Observable.just(item)
@@ -103,7 +100,6 @@ class RatesViewModel(
                     .switchMapSingle { validItem: RatesItem ->
                         getCurrencyRates(validItem.code, validItem.rate)
                             .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
-                            .doOnSuccess { Timber.d("List size %d", it.size) }
                     }
                     .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
                     .repeat()
@@ -114,7 +110,6 @@ class RatesViewModel(
     }
 
     private fun emitRatesItem(item: RatesItem) {
-        Timber.d("Emit item %s", item.toString())
         valveSubject.onNext(item)
     }
 

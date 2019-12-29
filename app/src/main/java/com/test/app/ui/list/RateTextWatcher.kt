@@ -10,6 +10,7 @@ class RateTextWatcher(
     var editableText: Editable? = null
 
     override fun afterTextChanged(s: Editable?) {
+        // A hack to distinguish EditTexts due to View recycled
         if (editableText === s) {
             onTextWatcherObservable.emitRate(s.toString().trim())
         }
