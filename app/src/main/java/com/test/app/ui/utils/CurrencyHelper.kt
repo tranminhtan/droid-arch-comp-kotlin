@@ -1,4 +1,4 @@
-package com.test.app.ui.list
+package com.test.app.ui.utils
 
 import java.math.BigDecimal
 import java.text.NumberFormat

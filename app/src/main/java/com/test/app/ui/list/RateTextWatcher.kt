@@ -2,6 +2,7 @@ package com.test.app.ui.list
 
 import android.text.Editable
 import android.text.TextWatcher
+import com.test.app.ui.utils.OnTextWatcherObservable
 
 class RateTextWatcher(
     private val onTextWatcherObservable: OnTextWatcherObservable

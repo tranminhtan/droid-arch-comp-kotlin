@@ -1,6 +1,7 @@
-package com.test.app.ui.list
+package com.test.app.ui.utils
 
 import com.test.app.service.CurrencyRateRepository
+import com.test.app.ui.list.RatesItem
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject

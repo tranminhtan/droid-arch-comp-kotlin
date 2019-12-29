@@ -1,4 +1,4 @@
-package com.test.app.ui
+package com.test.app.ui.list
 
 import android.view.View
 import androidx.annotation.UiThread
@@ -7,8 +7,6 @@ import com.test.app.BR
 import com.test.app.R
 import com.test.app.base.DataBindingRecyclerViewAdapter
 import com.test.app.service.CurrencyRateRepository
-import com.test.app.ui.list.RatesItem
-import com.test.app.ui.list.RatesItemViewModel
 import io.reactivex.Single
 import java.util.concurrent.Callable
 

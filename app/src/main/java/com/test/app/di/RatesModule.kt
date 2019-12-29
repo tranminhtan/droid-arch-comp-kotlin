@@ -5,13 +5,13 @@ import com.test.app.base.ResourcesProviderImpl
 import com.test.app.service.CurrencyRateRepositoryImpl
 import com.test.app.service.CurrencyRateService
 import com.test.app.ui.RatesActivity
-import com.test.app.ui.RatesListAdapter
 import com.test.app.ui.RatesViewModel
-import com.test.app.ui.list.OnClickRatesItemObservable
-import com.test.app.ui.list.OnEditRateClickListener
-import com.test.app.ui.list.OnTextWatcherObservable
 import com.test.app.ui.list.RateTextWatcher
 import com.test.app.ui.list.RatesItemViewModel
+import com.test.app.ui.list.RatesListAdapter
+import com.test.app.ui.utils.OnClickRatesItemObservable
+import com.test.app.ui.utils.OnEditRateClickListener
+import com.test.app.ui.utils.OnTextWatcherObservable
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit

@@ -8,6 +8,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.test.app.BR
 import com.test.app.R
+import com.test.app.ui.list.RatesListAdapter
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable

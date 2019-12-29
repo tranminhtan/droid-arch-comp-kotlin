@@ -1,4 +1,4 @@
-package com.test.app.ui.list
+package com.test.app.ui.utils
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers

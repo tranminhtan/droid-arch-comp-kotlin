@@ -5,12 +5,13 @@ import androidx.collection.ArrayMap
 import com.test.app.base.ResourcesProvider
 import com.test.app.service.CurrencyRateRepository
 import com.test.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
-import com.test.app.ui.list.CurrencyHelper
-import com.test.app.ui.list.OnClickRatesItemObservable
-import com.test.app.ui.list.OnTextWatcherObservable
 import com.test.app.ui.list.RatesItem
-import com.test.app.ui.list.isEqual
-import com.test.app.ui.list.toBigDecimalOrZero
+import com.test.app.ui.list.RatesListAdapter
+import com.test.app.ui.utils.CurrencyHelper
+import com.test.app.ui.utils.OnClickRatesItemObservable
+import com.test.app.ui.utils.OnTextWatcherObservable
+import com.test.app.ui.utils.isEqual
+import com.test.app.ui.utils.toBigDecimalOrZero
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,6 +33,11 @@ class RatesViewModel(
     private val onTextWatcherObservable: OnTextWatcherObservable,
     val adapter: RatesListAdapter
 ) {
+
+    init {
+        adapter.setList(repository.getPlaceHolderRates())
+    }
+
     // Trade off memory for better performance
     private val flagIconsCache = ArrayMap<String, Int>()
     private val displayNamesCache = ArrayMap<String, String>()
@@ -101,12 +107,11 @@ class RatesViewModel(
                         getCurrencyRates(validItem.code, validItem.rate)
                             .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
                     }
+                    .filter { it.isNotEmpty() }
+                    .compose(adapter.asRxTransformer().forObservable())
                     .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
                     .repeat()
             }
-            .startWith(repository.getPlaceHolderRates())
-            .filter { it.isNotEmpty() }
-            .compose(adapter.asRxTransformer().forObservable())
     }
 
     private fun emitRatesItem(item: RatesItem) {
