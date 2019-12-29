@@ -9,12 +9,12 @@
 
         <variable
             name="item"
-            type="com.test.app.ui.list.RatesItem"
+            type="com.task.app.ui.list.RatesItem"
             />
 
         <variable
             name="itemVm"
-            type="com.test.app.ui.list.RatesItemViewModel"
+            type="com.task.app.ui.list.RatesItemViewModel"
             />
     </data>
 
