@@ -5,9 +5,12 @@ import androidx.collection.ArrayMap
 import com.test.app.base.ResourcesProvider
 import com.test.app.service.CurrencyRateRepository
 import com.test.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
+import com.test.app.ui.list.CurrencyHelper
 import com.test.app.ui.list.OnClickRatesItemObservable
 import com.test.app.ui.list.OnTextWatcherObservable
 import com.test.app.ui.list.RatesItem
+import com.test.app.ui.list.isEqual
+import com.test.app.ui.list.toBigDecimalOrZero
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,7 +24,6 @@ import java.util.Currency
 import java.util.concurrent.TimeUnit
 
 private const val DELAY_IN_SEC = 1L
-private const val PRECISION = 5
 
 class RatesViewModel(
     private val repository: CurrencyRateRepository,
@@ -46,8 +48,8 @@ class RatesViewModel(
                 val baseItem = adapter.getList()[0] // First item is base item
 
                 // Call api if the current base is 0
-                if (toBigDecimal(baseItem.rate).compareTo(BigDecimal.ZERO) == 0
-                    && toBigDecimal(newBase).compareTo(BigDecimal.ZERO) != 0
+                if (baseItem.rate.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
+                    && newBase.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
                 ) {
                     Single.just(emptyList<RatesItem>())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
@@ -101,14 +103,14 @@ class RatesViewModel(
                     .switchMapSingle { validItem: RatesItem ->
                         getCurrencyRates(validItem.code, validItem.rate)
                             .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
-                            .doOnSuccess { Timber.d("After call API %s", it.toString()) }
+                            .doOnSuccess { Timber.d("List size %d", it.size) }
                     }
+                    .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
+                    .repeat()
             }
             .startWith(repository.getPlaceHolderRates())
             .filter { it.isNotEmpty() }
             .compose(adapter.asRxTransformer().forObservable())
-            .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
-            .repeat()
     }
 
     private fun emitRatesItem(item: RatesItem) {
@@ -138,22 +140,20 @@ class RatesViewModel(
     }
 
     private fun calculateRate(baseRate: String, rate: Double): String {
-        return BigDecimal(baseRate).multiply(BigDecimal(rate)).round(MathContext(PRECISION)).toPlainString()
-    }
-
-    private fun toBigDecimal(value: String): BigDecimal {
-        return value.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        return CurrencyHelper.format(baseRate.toBigDecimalOrZero().multiply(BigDecimal(rate)))
     }
 
     private fun calculateNewRate(newBase: String, currBase: String, currRate: String): String {
-        return if (toBigDecimal(newBase).compareTo(BigDecimal.ZERO) == 0
-            || toBigDecimal(currBase).compareTo(BigDecimal.ZERO) == 0
-            || toBigDecimal(currRate).compareTo(BigDecimal.ZERO) == 0
+        return if (newBase.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
+            || currBase.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
+            || currRate.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
         ) {
             ""
         } else {
-            toBigDecimal(newBase).multiply(toBigDecimal(currRate))
-                .divide(toBigDecimal(currBase), MathContext(PRECISION)).toPlainString()
+            CurrencyHelper.format(
+                newBase.toBigDecimalOrZero().multiply(currRate.toBigDecimalOrZero())
+                    .divide(currBase.toBigDecimalOrZero(), MathContext.DECIMAL64)
+            )
         }
     }
 
