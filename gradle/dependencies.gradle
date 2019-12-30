@@ -36,14 +36,20 @@ ext {
 
     junit = '4.12'
     mockito = '2.8.9'
-    powerMockVersion = '1.7.0RC4'
-    robolecticVersion = '4.2'
     unitTest = [
-            mockito      : "org.mockito:mockito-core:$mockito",
-            powerJunit4  : "org.powermock:powermock-module-junit4:$powerMockVersion",
-            powerMockito2: "org.powermock:powermock-api-mockito2:$powerMockVersion",
-            junit        : "junit:junit:$junit",
-            robolectric  : "org.robolectric:robolectric:$robolecticVersion",
+            mockito: "org.mockito:mockito-core:$mockito",
+            junit  : "junit:junit:$junit",
+    ]
+
+    droidTestVersion = '1.2.0'
+    assertVersion = '1.1.1'
+    espressoVersion = '3.2.0'
+    androidTest = [
+            core    : "androidx.test:core:$droidTestVersion",
+            runner  : "androidx.test:runner:$droidTestVersion",
+            rules   : "androidx.test:rules:$droidTestVersion",
+            assert  : "androidx.test.ext:junit:$assertVersion",
+            espresso: "androidx.test.espresso:espresso-core:$espressoVersion"
     ]
 
     daggerVersion = '2.25.3'

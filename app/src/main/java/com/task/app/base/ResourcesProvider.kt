@@ -14,15 +14,16 @@ interface ResourcesProvider {
 }
 
 class ResourcesProviderImpl(private val context: Context) : ResourcesProvider {
+
     @DrawableRes
     override fun getDrawableResId(currencyCode: String): Int {
         val resIcon = flagIconPrefix + currencyCode.toLowerCase(Locale.getDefault())
-
-        return try {
-            context.resources.getIdentifier(resIcon, "drawable", context.packageName)
-        } catch (e: RuntimeException) {
+        val id = context.resources.getIdentifier(resIcon, "drawable", context.packageName)
+        return if (id == 0) {
             Timber.w("No flag icon found for %s", resIcon)
             R.drawable.ic_place_holder
+        } else {
+            id
         }
     }
 }

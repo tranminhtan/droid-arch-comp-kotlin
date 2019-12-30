@@ -23,6 +23,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -30,6 +36,7 @@ dependencies {
     rx.values().forEach { implementation it }
     network.values().forEach { implementation it }
     unitTest.values().forEach { testImplementation it }
+    androidTest.values().forEach { androidTestImplementation it }
 
     implementation kotlinLib.stdlib
     implementation parser.moshi
@@ -41,7 +48,4 @@ dependencies {
     kapt di.daggerProcessor
 
     implementation info.timber
-
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
