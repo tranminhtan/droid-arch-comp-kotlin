@@ -4,18 +4,12 @@ import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DiffUtil
-import io.reactivex.Completable
-import io.reactivex.CompletableSource
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.MaybeSource
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.reactivestreams.Publisher
 
 internal class DiffResultRxTransformerCommands<T>(private val callback: Callback<T>) :
     RxTransformer.Commands<List<T>, List<T>> {
@@ -54,27 +48,10 @@ internal class DiffResultRxTransformerCommands<T>(private val callback: Callback
             }
     }
 
-    override fun applyCompletable(upstream: Completable): CompletableSource {
-        return Completable.error(UnsupportedOperationException("Completable not supported"))
-    }
-
-    override fun applyPublisher(upstream: Flowable<List<T>>): Publisher<List<T>> {
-        return upstream
-            .distinctUntilChanged()
-            .observeOn(Schedulers.computation())
-            .concatMap { newList -> calculateDiffResult(callback.getList(), newList).toFlowable() }
-    }
-
     override fun applySingle(upstream: Single<List<T>>): SingleSource<List<T>> {
         return upstream
             .observeOn(Schedulers.computation())
             .flatMap { newList -> calculateDiffResult(callback.getList(), newList) }
-    }
-
-    override fun applyMaybe(upstream: Maybe<List<T>>): MaybeSource<List<T>> {
-        return upstream
-            .observeOn(Schedulers.computation())
-            .flatMap { newList -> calculateDiffResult(callback.getList(), newList).toMaybe() }
     }
 
     /**

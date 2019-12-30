@@ -1,4 +1,4 @@
-package com.task.app.ui.utils
+package com.task.app.ui.support
 
 import com.task.app.service.CurrencyRateRepository
 import com.task.app.ui.list.RatesItem

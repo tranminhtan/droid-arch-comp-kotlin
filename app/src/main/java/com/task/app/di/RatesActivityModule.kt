@@ -10,9 +10,9 @@ import com.task.app.ui.RatesViewModel
 import com.task.app.ui.list.RateTextWatcher
 import com.task.app.ui.list.RatesItemViewModel
 import com.task.app.ui.list.RatesListAdapter
-import com.task.app.ui.utils.OnClickRatesItemObservable
-import com.task.app.ui.utils.OnEditRateClickListener
-import com.task.app.ui.utils.OnTextWatcherObservable
+import com.task.app.ui.support.OnClickRatesItemObservable
+import com.task.app.ui.support.OnEditRateClickListener
+import com.task.app.ui.support.OnTextWatcherObservable
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit

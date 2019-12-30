@@ -7,8 +7,8 @@ import com.task.app.base.MockSchedulersProvider
 import com.task.app.base.ResourcesProvider
 import com.task.app.service.CurrencyRateRepository
 import com.task.app.ui.list.RatesItem
-import com.task.app.ui.utils.OnClickRatesItemObservable
-import com.task.app.ui.utils.OnTextWatcherObservable
+import com.task.app.ui.support.OnClickRatesItemObservable
+import com.task.app.ui.support.OnTextWatcherObservable
 import io.reactivex.Single
 import org.junit.Test
 import org.mockito.Mock

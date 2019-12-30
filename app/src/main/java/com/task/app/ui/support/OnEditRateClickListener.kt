@@ -1,4 +1,4 @@
-package com.task.app.ui.utils
+package com.task.app.ui.support
 
 import android.view.View
 import android.widget.EditText

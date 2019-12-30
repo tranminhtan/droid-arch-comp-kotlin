@@ -2,7 +2,7 @@ package com.task.app.ui.list
 
 import android.text.Editable
 import android.text.TextWatcher
-import com.task.app.ui.utils.OnTextWatcherObservable
+import com.task.app.ui.support.OnTextWatcherObservable
 
 class RateTextWatcher(
     private val onTextWatcherObservable: OnTextWatcherObservable

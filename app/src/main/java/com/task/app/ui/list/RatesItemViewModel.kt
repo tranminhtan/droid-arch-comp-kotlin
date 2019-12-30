@@ -1,7 +1,7 @@
 package com.task.app.ui.list
 
-import com.task.app.ui.utils.OnClickRatesItemObservable
-import com.task.app.ui.utils.OnEditRateClickListener
+import com.task.app.ui.support.OnClickRatesItemObservable
+import com.task.app.ui.support.OnEditRateClickListener
 
 class RatesItemViewModel(
     private val onClickRatesItemObservable: OnClickRatesItemObservable,

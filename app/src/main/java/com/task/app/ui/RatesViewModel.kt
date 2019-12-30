@@ -8,11 +8,11 @@ import com.task.app.base.SchedulersProvider
 import com.task.app.service.CurrencyRateRepository
 import com.task.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
 import com.task.app.ui.list.RatesItem
-import com.task.app.ui.utils.CurrencyHelper
-import com.task.app.ui.utils.OnClickRatesItemObservable
-import com.task.app.ui.utils.OnTextWatcherObservable
-import com.task.app.ui.utils.isEqual
-import com.task.app.ui.utils.toBigDecimalOrZero
+import com.task.app.ui.support.CurrencyHelper
+import com.task.app.ui.support.OnClickRatesItemObservable
+import com.task.app.ui.support.OnTextWatcherObservable
+import com.task.app.ui.support.isEqual
+import com.task.app.ui.support.toBigDecimalOrZero
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
