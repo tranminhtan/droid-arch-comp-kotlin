@@ -1,4 +1,4 @@
-# Currency Rates & Convertion 
+# Currency Rates & Conversions 
 About 
 -----
 The app shows currency rates and converts rates. The data is updated every one second
