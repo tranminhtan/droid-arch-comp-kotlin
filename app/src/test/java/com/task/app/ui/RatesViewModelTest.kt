@@ -11,8 +11,8 @@ import com.task.app.ui.support.OnClickRatesItemObservable
 import com.task.app.ui.support.OnTextWatcherObservable
 import io.reactivex.Single
 import org.junit.Test
+import org.mockito.BDDMockito.given
 import org.mockito.Mock
-import org.mockito.Mockito
 import java.util.Currency
 
 class RatesViewModelTest : TestBase() {
@@ -43,8 +43,8 @@ class RatesViewModelTest : TestBase() {
     fun observeOnItemClick_firstLaunchEmitBaseItem_noUpdateAdapter() {
         val item = CurrencyRateRepository.BASE_RATES_ITEM
         val emptyData = emptyList<RatesItem>()
-        Mockito.doReturn(Single.just(emptyData))
-            .`when`(adapter).moveSelectedItemToTop(item)
+        given(adapter.moveSelectedItemToTop(item))
+            .willReturn(Single.just(emptyData))
 
         val testObserver = viewModel.observeOnItemClick().test()
 
@@ -67,9 +67,8 @@ class RatesViewModelTest : TestBase() {
     @Test
     fun observeOnItemClick_clickTheFirstItem_noUpdateAdapter() {
         val emptyData = emptyList<RatesItem>()
-        Mockito.doReturn(Single.just(emptyData))
-            .`when`(adapter).moveSelectedItemToTop(CurrencyRateRepository.BASE_RATES_ITEM)
-
+        given(adapter.moveSelectedItemToTop(CurrencyRateRepository.BASE_RATES_ITEM))
+            .willReturn(Single.just(emptyData))
         val testObserver = viewModel.observeOnItemClick().test()
 
         testObserver.assertNoErrors()
@@ -78,8 +77,8 @@ class RatesViewModelTest : TestBase() {
             .assertValue(emptyData)
 
         val list = testData()
-        Mockito.doReturn(Single.just(emptyData))
-            .`when`(adapter).moveSelectedItemToTop(list[0])
+        given(adapter.moveSelectedItemToTop(list[0]))
+            .willReturn(Single.just(emptyData))
 
         // Emit the firs item
         onClickRatesItemObservable.emitItem(list[0])
@@ -101,5 +100,4 @@ class RatesViewModelTest : TestBase() {
             RatesItem("CNY", Currency.getInstance("CNY").displayName, "", R.drawable.ic_flag_cny)
         )
     }
-
 }
