@@ -2,11 +2,12 @@ package com.task.app.ui
 
 import androidx.annotation.DrawableRes
 import androidx.collection.ArrayMap
+import com.task.app.base.DataBindingRecyclerViewAdapter
 import com.task.app.base.ResourcesProvider
+import com.task.app.base.SchedulersProvider
 import com.task.app.service.CurrencyRateRepository
 import com.task.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
 import com.task.app.ui.list.RatesItem
-import com.task.app.ui.list.RatesListAdapter
 import com.task.app.ui.utils.CurrencyHelper
 import com.task.app.ui.utils.OnClickRatesItemObservable
 import com.task.app.ui.utils.OnTextWatcherObservable
@@ -14,8 +15,6 @@ import com.task.app.ui.utils.isEqual
 import com.task.app.ui.utils.toBigDecimalOrZero
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import java.math.BigDecimal
@@ -27,11 +26,12 @@ import java.util.concurrent.TimeUnit
 private const val DELAY_IN_SEC = 1L
 
 class RatesViewModel(
+    private val schedulersProvider: SchedulersProvider,
     private val repository: CurrencyRateRepository,
     private val resourcesProvider: ResourcesProvider,
     private val onClickRatesItemObservable: OnClickRatesItemObservable,
     private val onTextWatcherObservable: OnTextWatcherObservable,
-    val adapter: RatesListAdapter
+    val adapter: DataBindingRecyclerViewAdapter<RatesItem>
 ) {
 
     init {
@@ -49,7 +49,7 @@ class RatesViewModel(
         return onTextWatcherObservable.observeRateChange()
             .doOnNext { Timber.w("Text changed %s", it) }
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
-            .subscribeOn(Schedulers.computation())
+            .subscribeOn(schedulersProvider.computation())
             .switchMapSingle { newBase: String ->
                 val baseItem = adapter.getList()[0] // First item is base item
 
@@ -73,7 +73,7 @@ class RatesViewModel(
                             it
                         }
                         .compose(adapter.asRxTransformer().forSingle())
-                        .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
+                        .delay(DELAY_IN_SEC, TimeUnit.SECONDS, schedulersProvider.computation())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
                 }
             }
@@ -82,7 +82,7 @@ class RatesViewModel(
     fun observeOnItemClick(): Observable<Any> {
         return onClickRatesItemObservable.observeClickItem()
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulersProvider.ui())
             .switchMapSingle { item: RatesItem ->
                 adapter.moveSelectedItemToTop(item)
                     .flatMap {
@@ -99,7 +99,7 @@ class RatesViewModel(
     fun observeGetCurrencyRatesInterval(): Observable<List<RatesItem>> {
         return valveSubject
             .distinctUntilChanged()
-            .subscribeOn(Schedulers.computation())
+            .subscribeOn(schedulersProvider.computation())
             .switchMap { item: RatesItem ->
                 Observable.just(item)
                     .takeWhile { it != EMPTY_RATES_ITEM } // Not stop spamming server signal
@@ -109,7 +109,7 @@ class RatesViewModel(
                     }
                     .filter { it.isNotEmpty() }
                     .compose(adapter.asRxTransformer().forObservable())
-                    .delay(DELAY_IN_SEC, TimeUnit.SECONDS, Schedulers.computation())
+                    .delay(DELAY_IN_SEC, TimeUnit.SECONDS, schedulersProvider.computation())
                     .repeat()
             }
     }

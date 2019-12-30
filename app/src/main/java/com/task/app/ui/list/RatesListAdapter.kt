@@ -8,7 +8,6 @@ import com.task.app.R
 import com.task.app.base.DataBindingRecyclerViewAdapter
 import com.task.app.service.CurrencyRateRepository
 import io.reactivex.Single
-import java.util.concurrent.Callable
 
 class RatesListAdapter(private val ratesItemViewModel: RatesItemViewModel) : DataBindingRecyclerViewAdapter<RatesItem>() {
 
@@ -30,26 +29,30 @@ class RatesListAdapter(private val ratesItemViewModel: RatesItemViewModel) : Dat
     }
 
     @UiThread
-    fun moveSelectedItemToTop(item: RatesItem): Single<List<RatesItem>> {
-        return Single.fromCallable(Callable {
-            val newList = getList().toMutableList()
-            if (newList.isNotEmpty() && item != CurrencyRateRepository.BASE_RATES_ITEM) {
-                val currentPos = newList.indexOf(item)
+    override fun moveSelectedItemToTop(item: RatesItem): Single<List<RatesItem>> {
+        return Single.fromCallable { moveSelectedItemToTop(getList(), item) }
+    }
 
-                if (currentPos > 0) {
-                    newList.remove(item).also {
-                        newList.add(0, item)
-                    }
-                    setListWithoutNotifyChanged(newList)
-                    notifyItemMoved(currentPos, 0)
+    private fun moveSelectedItemToTop(list: List<RatesItem>, item: RatesItem): List<RatesItem> {
+        val newList = list.toMutableList()
+        if (newList.isNotEmpty() && item != CurrencyRateRepository.BASE_RATES_ITEM) {
+            val currentPos = newList.indexOf(item)
 
-                    // Update editable state
-                    newList[0] = newList[0].copy(editable = true)
-                    newList[1] = newList[1].copy(editable = false)
-                    return@Callable newList
+            return if (currentPos > 0) {
+                newList.remove(item).also {
+                    newList.add(0, item)
                 }
+                setListWithoutNotifyChanged(newList)
+                notifyItemMoved(currentPos, 0)
+
+                // Update editable state
+                newList[0] = newList[0].copy(editable = true)
+                newList[1] = newList[1].copy(editable = false)
+                newList
+            } else {
+                emptyList()
             }
-            emptyList<RatesItem>()
-        })
+        }
+        return emptyList()
     }
 }

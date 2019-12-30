@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.task.app.ui.list.RatesItem
+import io.reactivex.Single
 
 abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
     context: Context? = null,
@@ -90,4 +92,6 @@ abstract class DataBindingRecyclerViewAdapter<T> @JvmOverloads constructor(
             }
         }
     }
+
+    abstract fun moveSelectedItemToTop(item: RatesItem): Single<List<RatesItem>>
 }

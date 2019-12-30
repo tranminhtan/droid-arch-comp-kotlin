@@ -1,0 +1,105 @@
+package com.task.app.ui
+
+import com.task.app.R
+import com.task.app.TestBase
+import com.task.app.base.DataBindingRecyclerViewAdapter
+import com.task.app.base.MockSchedulersProvider
+import com.task.app.base.ResourcesProvider
+import com.task.app.service.CurrencyRateRepository
+import com.task.app.ui.list.RatesItem
+import com.task.app.ui.utils.OnClickRatesItemObservable
+import com.task.app.ui.utils.OnTextWatcherObservable
+import io.reactivex.Single
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito
+import java.util.Currency
+
+class RatesViewModelTest : TestBase() {
+
+    @Mock
+    lateinit var repository: CurrencyRateRepository
+    @Mock
+    lateinit var resourcesProvider: ResourcesProvider
+    @Mock
+    lateinit var adapter: DataBindingRecyclerViewAdapter<RatesItem>
+
+    private val schedulersProvider = MockSchedulersProvider()
+    private val onClickRatesItemObservable = OnClickRatesItemObservable()
+    private val onTextWatcherObservable = OnTextWatcherObservable(schedulersProvider)
+
+
+    private lateinit var viewModel: RatesViewModel
+
+    override fun setup() {
+        super.setup()
+        viewModel = RatesViewModel(
+            schedulersProvider, repository, resourcesProvider, onClickRatesItemObservable, onTextWatcherObservable,
+            adapter
+        )
+    }
+
+    @Test
+    fun observeOnItemClick_firstLaunchEmitBaseItem_noUpdateAdapter() {
+        val item = CurrencyRateRepository.BASE_RATES_ITEM
+        val emptyData = emptyList<RatesItem>()
+        Mockito.doReturn(Single.just(emptyData))
+            .`when`(adapter).moveSelectedItemToTop(item)
+
+        val testObserver = viewModel.observeOnItemClick().test()
+
+        testObserver.assertNoErrors()
+            .assertNotTerminated()
+            .assertValueCount(1)
+            .assertValue(emptyData)
+
+        // Try to emit the same value, won't emit
+        onClickRatesItemObservable.emitItem(item)
+
+        testObserver
+            .assertNotTerminated()
+            .assertNoErrors()
+            .assertValueCount(1)
+            .assertValues(emptyData)
+            .dispose()
+    }
+
+    @Test
+    fun observeOnItemClick_clickTheFirstItem_noUpdateAdapter() {
+        val emptyData = emptyList<RatesItem>()
+        Mockito.doReturn(Single.just(emptyData))
+            .`when`(adapter).moveSelectedItemToTop(CurrencyRateRepository.BASE_RATES_ITEM)
+
+        val testObserver = viewModel.observeOnItemClick().test()
+
+        testObserver.assertNoErrors()
+            .assertNotTerminated()
+            .assertValueCount(1)
+            .assertValue(emptyData)
+
+        val list = testData()
+        Mockito.doReturn(Single.just(emptyData))
+            .`when`(adapter).moveSelectedItemToTop(list[0])
+
+        // Emit the firs item
+        onClickRatesItemObservable.emitItem(list[0])
+
+        testObserver
+            .assertNotTerminated()
+            .assertNoErrors()
+            .assertValueCount(2)
+            .assertValues(emptyData, emptyData)
+            .dispose()
+    }
+
+    private fun testData(): List<RatesItem> {
+        return listOf(
+            RatesItem("AUD", Currency.getInstance("AUD").displayName, "", R.drawable.ic_flag_aud),
+            RatesItem("BGN", Currency.getInstance("BGN").displayName, "", R.drawable.ic_flag_bgn),
+            RatesItem("BRL", Currency.getInstance("BRL").displayName, "", R.drawable.ic_flag_brl),
+            RatesItem("CAD", Currency.getInstance("CAD").displayName, "", R.drawable.ic_flag_cad),
+            RatesItem("CNY", Currency.getInstance("CNY").displayName, "", R.drawable.ic_flag_cny)
+        )
+    }
+
+}

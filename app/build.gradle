@@ -29,6 +29,7 @@ dependencies {
     droid.values().forEach { implementation it }
     rx.values().forEach { implementation it }
     network.values().forEach { implementation it }
+    unitTest.values().forEach { testImplementation it }
 
     implementation kotlinLib.stdlib
     implementation parser.moshi
@@ -41,8 +42,6 @@ dependencies {
 
     implementation info.timber
 
-    testImplementation unitTest.junit
-    testImplementation unitTest.mockito
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
