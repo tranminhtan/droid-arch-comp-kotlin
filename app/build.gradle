@@ -38,6 +38,11 @@ dependencies {
     unitTest.values().forEach { testImplementation it }
     androidTest.values().forEach { androidTestImplementation it }
 
+    implementation info.timber
+    implementation lifecycle.extensions
+    implementation lifecycle.livedata
+    implementation lifecycle.viewmodel
+
     implementation kotlinLib.stdlib
     implementation parser.moshi
     kapt parser.moshiCodegen
@@ -46,6 +51,4 @@ dependencies {
     implementation di.daggerAndroid
     kapt di.daggerCompiler
     kapt di.daggerProcessor
-
-    implementation info.timber
 }

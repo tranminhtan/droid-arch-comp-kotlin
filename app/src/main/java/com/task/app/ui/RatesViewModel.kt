@@ -2,6 +2,9 @@ package com.task.app.ui
 
 import androidx.annotation.DrawableRes
 import androidx.collection.ArrayMap
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.task.app.base.DataBindingRecyclerViewAdapter
 import com.task.app.base.ResourcesProvider
 import com.task.app.base.SchedulersProvider
@@ -15,6 +18,9 @@ import com.task.app.ui.support.isEqual
 import com.task.app.ui.support.toBigDecimalOrZero
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
+import io.reactivex.internal.functions.Functions
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import java.math.BigDecimal
@@ -32,12 +38,13 @@ class RatesViewModel(
     private val onClickRatesItemObservable: OnClickRatesItemObservable,
     private val onTextWatcherObservable: OnTextWatcherObservable,
     val adapter: DataBindingRecyclerViewAdapter<RatesItem>
-) {
+) : LifecycleObserver {
 
     init {
         adapter.setList(repository.getPlaceHolderRates())
     }
 
+    private lateinit var disposable: Disposable
     // Trade off memory for better performance
     private val flagIconsCache = ArrayMap<String, Int>()
     private val displayNamesCache = ArrayMap<String, String>()
@@ -45,7 +52,23 @@ class RatesViewModel(
     // A valve to turn on/off updating currency rate
     private val valveSubject = BehaviorSubject.create<RatesItem>()
 
-    fun observeRateTextChange(): Observable<List<RatesItem>> {
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun observeRxStreams() {
+        disposable =
+            Observable.merge(
+                observeOnItemClick(),
+                observeGetCurrencyRatesInterval(),
+                observeRateTextChange()
+            )
+                .subscribe(Functions.emptyConsumer(), Consumer { Timber.e(it) })
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun disposeRxStreams() {
+        disposable.dispose()
+    }
+
+    private fun observeRateTextChange(): Observable<List<RatesItem>> {
         return onTextWatcherObservable.observeRateChange()
             .doOnNext { Timber.w("Text changed %s", it) }
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
@@ -96,7 +119,7 @@ class RatesViewModel(
             }
     }
 
-    fun observeGetCurrencyRatesInterval(): Observable<List<RatesItem>> {
+    private fun observeGetCurrencyRatesInterval(): Observable<List<RatesItem>> {
         return valveSubject
             .distinctUntilChanged()
             .subscribeOn(schedulersProvider.computation())

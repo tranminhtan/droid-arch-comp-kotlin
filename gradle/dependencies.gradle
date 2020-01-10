@@ -8,6 +8,12 @@ ext {
             constraintLayout: "androidx.constraintlayout:constraintlayout:$androidXConstraintLayoutVersion",
             recyclerView    : "androidx.recyclerview:recyclerview:$androidXVersion"
     ]
+    lifecycleVersion = '2.2.0-rc03'
+    lifecycle = [
+            extensions: "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion",
+            livedata  : "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion",
+            viewmodel : "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    ]
 
     rxJavaVersion = '2.2.13'
     rxAndroidVersion = '2.1.1'
