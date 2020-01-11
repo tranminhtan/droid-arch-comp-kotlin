@@ -2,7 +2,6 @@ package com.task.app.ui
 
 import com.task.app.R
 import com.task.app.TestBase
-import com.task.app.base.DataBindingRecyclerViewAdapter
 import com.task.app.base.MockSchedulersProvider
 import com.task.app.base.ResourcesProvider
 import com.task.app.service.CurrencyRateRepository

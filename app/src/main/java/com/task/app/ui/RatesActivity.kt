@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.task.app.BR
 import com.task.app.R
 import com.task.app.base.LifecycleDaggerActivity
-import com.task.app.ui.list.RatesListAdapter
+import com.task.app.ui.list.RatesAdapter
 import kotlinx.android.synthetic.main.activity_main.view.recyclerView
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ class RatesActivity : LifecycleDaggerActivity() {
     lateinit var viewModel: RatesViewModel
 
     @Inject
-    lateinit var adapter: RatesListAdapter
+    lateinit var adapter: RatesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

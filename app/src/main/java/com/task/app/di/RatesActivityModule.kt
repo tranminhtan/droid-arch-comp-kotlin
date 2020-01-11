@@ -8,8 +8,8 @@ import com.task.app.service.CurrencyRateService
 import com.task.app.ui.RatesActivity
 import com.task.app.ui.RatesViewModel
 import com.task.app.ui.list.RateTextWatcher
+import com.task.app.ui.list.RatesAdapter
 import com.task.app.ui.list.RatesItemViewModel
-import com.task.app.ui.list.RatesListAdapter
 import com.task.app.ui.support.OnClickRatesItemObservable
 import com.task.app.ui.support.OnEditRateClickListener
 import com.task.app.ui.support.OnTextWatcherObservable
@@ -36,7 +36,7 @@ object RatesActivityModule {
     fun provideAdapter(
         onClickRatesItemObservable: OnClickRatesItemObservable,
         onTextWatcherObservable: OnTextWatcherObservable
-    ) = RatesListAdapter(
+    ) = RatesAdapter(
         RatesItemViewModel(
             onClickRatesItemObservable,
             RateTextWatcher(onTextWatcherObservable),
@@ -53,7 +53,7 @@ object RatesActivityModule {
         retrofit: Retrofit,
         onClickRatesItemObservable: OnClickRatesItemObservable,
         onTextWatcherObservable: OnTextWatcherObservable,
-        adapter: RatesListAdapter
+        adapter: RatesAdapter
     ): RatesViewModel {
         return RatesViewModel(
             schedulersProvider,

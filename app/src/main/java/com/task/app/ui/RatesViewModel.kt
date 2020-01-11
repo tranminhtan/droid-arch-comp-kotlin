@@ -5,11 +5,11 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.task.app.base.DataBindingRecyclerViewAdapter
 import com.task.app.base.ResourcesProvider
 import com.task.app.base.SchedulersProvider
 import com.task.app.service.CurrencyRateRepository
 import com.task.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
+import com.task.app.ui.list.RatesAdapter
 import com.task.app.ui.list.RatesItem
 import com.task.app.ui.support.CurrencyHelper
 import com.task.app.ui.support.OnClickRatesItemObservable
@@ -37,11 +37,11 @@ class RatesViewModel(
     private val resourcesProvider: ResourcesProvider,
     private val onClickRatesItemObservable: OnClickRatesItemObservable,
     private val onTextWatcherObservable: OnTextWatcherObservable,
-    val adapter: DataBindingRecyclerViewAdapter<RatesItem>
+    val adapter: RatesAdapter
 ) : LifecycleObserver {
 
     init {
-        adapter.setList(repository.getPlaceHolderRates())
+        adapter.submitList(repository.getPlaceHolderRates())
     }
 
     private lateinit var disposable: Disposable
@@ -74,7 +74,7 @@ class RatesViewModel(
             .doOnNext { emitRatesItem(EMPTY_RATES_ITEM) } // Stop spamming server
             .subscribeOn(schedulersProvider.computation())
             .switchMapSingle { newBase: String ->
-                val baseItem = adapter.getList()[0] // First item is base item
+                val baseItem = adapter.currentList[0] // First item is base item
 
                 // Call api if the current base is 0
                 if (baseItem.rate.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
@@ -85,7 +85,7 @@ class RatesViewModel(
                 }
                 // Calculate rates locally
                 else {
-                    Observable.fromIterable(adapter.getList())
+                    Observable.fromIterable(adapter.currentList)
                         .map { currItem: RatesItem ->
                             val newRate = calculateNewRate(newBase, baseItem.rate, currItem.rate)
                             currItem.copy(rate = newRate)
@@ -95,7 +95,7 @@ class RatesViewModel(
                             it[0] = it[0].copy(rate = newBase)
                             it
                         }
-                        .compose(adapter.asRxTransformer().forSingle())
+                        .compose(adapter)
                         .delay(DELAY_IN_SEC, TimeUnit.SECONDS, schedulersProvider.computation())
                         .doOnSuccess { emitRatesItem(baseItem.copy(rate = newBase)) }
                 }
@@ -110,7 +110,7 @@ class RatesViewModel(
                 adapter.moveSelectedItemToTop(item)
                     .flatMap {
                         if (it.isNotEmpty()) {
-                            Single.just(it).compose(adapter.asRxTransformer().forSingle())
+                            Single.just(it).compose(adapter)
                         } else {
                             Single.just(it)
                         }
@@ -131,7 +131,7 @@ class RatesViewModel(
                             .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
                     }
                     .filter { it.isNotEmpty() }
-                    .compose(adapter.asRxTransformer().forObservable())
+                    .compose(adapter)
                     .delay(DELAY_IN_SEC, TimeUnit.SECONDS, schedulersProvider.computation())
                     .repeat()
             }
