@@ -3,8 +3,11 @@ package com.task.app.di
 import com.task.app.annotation.ActivityScoped
 import com.task.app.base.ResourcesProviderImpl
 import com.task.app.base.SchedulersProvider
+import com.task.app.service.CurrencyRateRepository
 import com.task.app.service.CurrencyRateRepositoryImpl
 import com.task.app.service.CurrencyRateService
+import com.task.app.ui.GetPlaceHolderRatesItemUseCase
+import com.task.app.ui.GetServerRatesItemUseCase
 import com.task.app.ui.RatesActivity
 import com.task.app.ui.RatesViewModel
 import com.task.app.ui.list.RateTextWatcher
@@ -47,18 +50,24 @@ object RatesActivityModule {
     @JvmStatic
     @ActivityScoped
     @Provides
+    fun provideRepository(retrofit: Retrofit): CurrencyRateRepository =
+        CurrencyRateRepositoryImpl(retrofit.create(CurrencyRateService::class.java))
+
+    @JvmStatic
+    @ActivityScoped
+    @Provides
     fun provideRatesViewModel(
         schedulersProvider: SchedulersProvider,
         activity: RatesActivity,
-        retrofit: Retrofit,
+        repository: CurrencyRateRepository,
         onClickRatesItemObservable: OnClickRatesItemObservable,
         onTextWatcherObservable: OnTextWatcherObservable,
         adapter: RatesAdapter
     ): RatesViewModel {
         return RatesViewModel(
             schedulersProvider,
-            CurrencyRateRepositoryImpl(retrofit.create(CurrencyRateService::class.java)),
-            ResourcesProviderImpl(activity),
+            GetPlaceHolderRatesItemUseCase(repository),
+            GetServerRatesItemUseCase(repository, ResourcesProviderImpl(activity)),
             onClickRatesItemObservable,
             onTextWatcherObservable,
             adapter

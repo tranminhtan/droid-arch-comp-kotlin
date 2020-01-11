@@ -1,17 +1,12 @@
 package com.task.app.ui
 
-import androidx.annotation.DrawableRes
-import androidx.collection.ArrayMap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.task.app.base.ResourcesProvider
 import com.task.app.base.SchedulersProvider
-import com.task.app.service.CurrencyRateRepository
 import com.task.app.service.CurrencyRateRepository.Companion.EMPTY_RATES_ITEM
 import com.task.app.ui.list.RatesAdapter
 import com.task.app.ui.list.RatesItem
-import com.task.app.ui.support.CurrencyHelper
 import com.task.app.ui.support.OnClickRatesItemObservable
 import com.task.app.ui.support.OnTextWatcherObservable
 import com.task.app.ui.support.isEqual
@@ -24,30 +19,25 @@ import io.reactivex.internal.functions.Functions
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.MathContext
 import java.util.Collections
-import java.util.Currency
 import java.util.concurrent.TimeUnit
 
 private const val DELAY_IN_SEC = 1L
 
 class RatesViewModel(
     private val schedulersProvider: SchedulersProvider,
-    private val repository: CurrencyRateRepository,
-    private val resourcesProvider: ResourcesProvider,
+    placeHolderRatesItemUseCase: GetPlaceHolderRatesItemUseCase,
+    private val serverRatesItemUseCase: GetServerRatesItemUseCase,
     private val onClickRatesItemObservable: OnClickRatesItemObservable,
     private val onTextWatcherObservable: OnTextWatcherObservable,
     val adapter: RatesAdapter
 ) : LifecycleObserver {
 
     init {
-        adapter.submitList(repository.getPlaceHolderRates())
+        adapter.submitList(placeHolderRatesItemUseCase.getPlaceHolderRates())
     }
 
     private lateinit var disposable: Disposable
-    // Trade off memory for better performance
-    private val flagIconsCache = ArrayMap<String, Int>()
-    private val displayNamesCache = ArrayMap<String, String>()
 
     // A valve to turn on/off updating currency rate
     private val valveSubject = BehaviorSubject.create<RatesItem>()
@@ -87,7 +77,7 @@ class RatesViewModel(
                 else {
                     Observable.fromIterable(adapter.currentList)
                         .map { currItem: RatesItem ->
-                            val newRate = calculateNewRate(newBase, baseItem.rate, currItem.rate)
+                            val newRate = serverRatesItemUseCase.calculateNewRate(newBase, baseItem.rate, currItem.rate)
                             currItem.copy(rate = newRate)
                         }
                         .collectInto(arrayListOf<RatesItem>(), { list, item -> list.add(item) })
@@ -127,7 +117,7 @@ class RatesViewModel(
                 Observable.just(item)
                     .takeWhile { it != EMPTY_RATES_ITEM } // Not stop spamming server signal
                     .switchMapSingle { validItem: RatesItem ->
-                        getCurrencyRates(validItem.code, validItem.rate)
+                        serverRatesItemUseCase.getCurrencyRates(validItem.code, validItem.rate)
                             .onErrorReturnItem(Collections.emptyList()) // Simply swallow error
                     }
                     .filter { it.isNotEmpty() }
@@ -139,63 +129,5 @@ class RatesViewModel(
 
     private fun emitRatesItem(item: RatesItem) {
         valveSubject.onNext(item)
-    }
-
-    // Get currency rates and convert to RatesItem list
-    private fun getCurrencyRates(baseCode: String, baseRate: String): Single<List<RatesItem>> {
-        return repository.getCurrencyRates(baseCode)
-            .flatMapObservable { Observable.fromIterable(it.entries) }
-            .map { entry -> toRatesItem(entry, baseRate) }
-            .collectInto(initListWithBaseItem(baseCode, baseRate), { list, item -> list.add(item) })
-            .map { it }
-    }
-
-    private fun initListWithBaseItem(code: String, rate: String): MutableList<RatesItem> {
-        return mutableListOf(toRatesItem(code, rate, true))
-    }
-
-    private fun toRatesItem(entry: Map.Entry<String, Double>, baseRate: String): RatesItem {
-        return toRatesItem(entry.key, calculateRate(baseRate, entry.value))
-    }
-
-    private fun toRatesItem(code: String, rate: String, enabled: Boolean = false): RatesItem {
-        return RatesItem(code, getDisplayName(code), rate, getFlagRes(code), enabled)
-    }
-
-    private fun calculateRate(baseRate: String, rate: Double): String {
-        return CurrencyHelper.format(baseRate.toBigDecimalOrZero().multiply(BigDecimal(rate)))
-    }
-
-    private fun calculateNewRate(newBase: String, currBase: String, currRate: String): String {
-        return if (newBase.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
-            || currBase.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
-            || currRate.toBigDecimalOrZero().isEqual(BigDecimal.ZERO)
-        ) {
-            ""
-        } else {
-            CurrencyHelper.format(
-                newBase.toBigDecimalOrZero().multiply(currRate.toBigDecimalOrZero())
-                    .divide(currBase.toBigDecimalOrZero(), MathContext.DECIMAL64)
-            )
-        }
-    }
-
-    @DrawableRes
-    private fun getFlagRes(code: String): Int {
-        var res = flagIconsCache[code]
-        if (res == null) {
-            res = resourcesProvider.getDrawableResId(code)
-            flagIconsCache[code] = res
-        }
-        return res
-    }
-
-    private fun getDisplayName(code: String): String {
-        var name = displayNamesCache[code]
-        if (name == null) {
-            name = Currency.getInstance(code).displayName
-            displayNamesCache[code] = name
-        }
-        return name ?: ""
     }
 }
