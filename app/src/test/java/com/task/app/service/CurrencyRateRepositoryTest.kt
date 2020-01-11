@@ -6,7 +6,6 @@ import io.reactivex.Single
 import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
-import org.mockito.Mockito
 import java.util.Collections
 
 class CurrencyRateRepositoryTest : TestBase() {

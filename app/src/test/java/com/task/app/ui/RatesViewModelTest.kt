@@ -3,8 +3,8 @@ package com.task.app.ui
 import com.task.app.R
 import com.task.app.TestBase
 import com.task.app.base.MockSchedulersProvider
-import com.task.app.base.ResourcesProvider
 import com.task.app.service.CurrencyRateRepository
+import com.task.app.ui.list.RatesAdapter
 import com.task.app.ui.list.RatesItem
 import com.task.app.ui.support.OnClickRatesItemObservable
 import com.task.app.ui.support.OnTextWatcherObservable
@@ -17,11 +17,11 @@ import java.util.Currency
 class RatesViewModelTest : TestBase() {
 
     @Mock
-    lateinit var repository: CurrencyRateRepository
+    lateinit var placeHolderRatesItemUseCase: GetPlaceHolderRatesItemUseCase
     @Mock
-    lateinit var resourcesProvider: ResourcesProvider
+    lateinit var serverRatesItemUseCase: GetServerRatesItemUseCase
     @Mock
-    lateinit var adapter: DataBindingRecyclerViewAdapter<RatesItem>
+    lateinit var adapter: RatesAdapter
 
     private val schedulersProvider = MockSchedulersProvider()
     private val onClickRatesItemObservable = OnClickRatesItemObservable()
@@ -33,7 +33,7 @@ class RatesViewModelTest : TestBase() {
     override fun setup() {
         super.setup()
         viewModel = RatesViewModel(
-            schedulersProvider, repository, resourcesProvider, onClickRatesItemObservable, onTextWatcherObservable,
+            schedulersProvider, placeHolderRatesItemUseCase, serverRatesItemUseCase, onClickRatesItemObservable, onTextWatcherObservable,
             adapter
         )
     }
